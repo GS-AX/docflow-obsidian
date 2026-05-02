@@ -42,7 +42,7 @@ Shows frontmatter metadata for the currently open artifact file.
 ### Template Inserter
 Insert a pre-filled artifact template from the command palette.
 
-- Command: `DocFlow: 산출물 템플릿 삽입`
+- Command: `DocFlow: Insert Artifact Template`
 - Supports all 7 artifact types
 - Prompts for title, project, author — leaves content placeholders in place for you to fill
 
@@ -142,7 +142,7 @@ paths:
 
 1. Open or create a new empty note
 2. Open the command palette (`Ctrl+P` / `Cmd+P`)
-3. Run **DocFlow: 산출물 템플릿 삽입**
+3. Run **DocFlow: Insert Artifact Template**
 4. Select an artifact type
 5. Fill in the title, project, and author fields
 6. Click **템플릿 삽입**

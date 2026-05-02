@@ -43,26 +43,26 @@ export default class DocFlowPlugin extends Plugin {
     }
 
     // 4. 리본 아이콘
-    this.addRibbonIcon('layers', 'DocFlow 탐색기 열기', () => {
+    this.addRibbonIcon('layers', 'Open DocFlow Explorer', () => {
       void this.activateView(ARTIFACT_EXPLORER_VIEW_TYPE, 'left');
     });
 
     // 5. 커맨드 팔레트
     this.addCommand({
       id:       'insert-template',
-      name:     '산출물 템플릿 삽입',
+      name:     'Insert Artifact Template',
       callback: () => openTemplateInserter(this.app),
     });
 
     this.addCommand({
       id:       'open-explorer',
-      name:     '산출물 탐색기 열기',
+      name:     'Open Artifact Explorer',
       callback: () => void this.activateView(ARTIFACT_EXPLORER_VIEW_TYPE, 'left'),
     });
 
     this.addCommand({
       id:       'open-metadata-panel',
-      name:     '메타데이터 패널 열기',
+      name:     'Open Metadata Panel',
       callback: () => void this.activateView(METADATA_PANEL_VIEW_TYPE, 'right'),
     });
 
