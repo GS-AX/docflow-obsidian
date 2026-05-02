@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "minAppVersion": "1.4.0",
   "description": "Render IT project artifacts (ERD, API specs, WBS, architecture diagrams) with type-aware views inside Obsidian.",
-  "author": "DocFlow",
+  "author": "HJ",
   "authorUrl": "https://github.com/docflow-plugin/docflow",
   "fundingUrl": "",
   "isDesktopOnly": false
