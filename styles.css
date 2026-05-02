@@ -1,0 +1,991 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   DocFlow — API Renderer (Swagger UI 오버라이드)
+   swagger-ui.css 는 ApiRenderer.ts 에서 <style> 태그로 주입된다.
+   여기서는 Obsidian 테마 연동 및 레이아웃 오버라이드만 정의한다.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 컨테이너 ─────────────────────────────────────────────────────────────── */
+
+.docflow-api-container {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m, 6px);
+  overflow: hidden;
+  background: var(--background-primary);
+  margin: 1em 0;
+}
+
+/* ── 헤더 바 ─────────────────────────────────────────────────────────────── */
+
+.docflow-api-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+  flex-wrap: wrap;
+}
+
+.docflow-api-title {
+  font-weight: 600;
+  color: var(--text-normal);
+  font-size: var(--font-ui-medium);
+}
+
+.docflow-api-spec-version {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+}
+
+/* ── 뱃지 ───────────────────────────────────────────────────────────────── */
+
+.docflow-api-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: var(--font-ui-smaller);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-family: var(--font-monospace);
+}
+
+.docflow-api-badge--oas3 {
+  background: var(--color-green, #22c55e);
+  color: var(--color-base-00, #fff);
+}
+
+.docflow-api-badge--oas2 {
+  background: var(--color-blue, #3b82f6);
+  color: #fff;
+}
+
+.docflow-api-badge--try-off {
+  margin-left: auto;
+  background: var(--background-modifier-border);
+  color: var(--text-muted);
+  cursor: help;
+}
+
+/* ── Swagger UI 마운트 영역 ────────────────────────────────────────────────── */
+
+.docflow-api-swagger {
+  overflow: auto;
+  max-height: 80vh;
+}
+
+/* Swagger 자체 상단 로고 바 숨김 */
+.docflow-api-swagger .swagger-ui .topbar {
+  display: none !important;
+}
+
+/* wrapper 패딩 & 최대 너비 해제 */
+.docflow-api-swagger .swagger-ui .wrapper {
+  padding: 0 12px;
+  max-width: 100%;
+}
+
+/* ── Obsidian 테마 색상 연동 ────────────────────────────────────────────────── */
+
+.docflow-api-swagger .swagger-ui {
+  color: var(--text-normal);
+  font-family: var(--font-text);
+}
+
+.docflow-api-swagger .swagger-ui .info .title {
+  color: var(--text-normal);
+}
+
+.docflow-api-swagger .swagger-ui .info li,
+.docflow-api-swagger .swagger-ui .info p,
+.docflow-api-swagger .swagger-ui .info a {
+  color: var(--text-muted);
+}
+
+/* opblock (각 엔드포인트 블록) */
+.docflow-api-swagger .swagger-ui .opblock .opblock-summary-description {
+  color: var(--text-muted);
+}
+
+/* 다크 테마 배경 보정 */
+.theme-dark .docflow-api-swagger .swagger-ui .model-box {
+  background: var(--background-secondary);
+}
+
+.theme-dark .docflow-api-swagger .swagger-ui section.models {
+  border-color: var(--background-modifier-border);
+}
+
+.theme-dark .docflow-api-swagger .swagger-ui section.models .model-container {
+  background: var(--background-secondary);
+}
+
+.theme-dark .docflow-api-swagger .swagger-ui .opblock-tag {
+  border-color: var(--background-modifier-border);
+}
+
+.theme-dark .docflow-api-swagger .swagger-ui table thead tr td,
+.theme-dark .docflow-api-swagger .swagger-ui table thead tr th {
+  color: var(--text-muted);
+  border-color: var(--background-modifier-border);
+}
+
+.theme-dark .docflow-api-swagger .swagger-ui .parameter__name,
+.theme-dark .docflow-api-swagger .swagger-ui .parameter__type {
+  color: var(--text-normal);
+}
+
+.theme-dark .docflow-api-swagger .swagger-ui input,
+.theme-dark .docflow-api-swagger .swagger-ui textarea,
+.theme-dark .docflow-api-swagger .swagger-ui select {
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  border-color: var(--background-modifier-border);
+}
+
+/* ── 에러 상태 ───────────────────────────────────────────────────────────── */
+
+.docflow-api-error {
+  padding: 16px 20px;
+  color: var(--text-error);
+  background: var(--background-modifier-error, rgba(255, 0, 0, 0.08));
+  margin: 0;
+  font-size: var(--font-ui-small);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DocFlow — ERD Renderer
+   모든 색상은 Obsidian CSS Variables 사용 → 다크/라이트 테마 자동 대응
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 컨테이너 ─────────────────────────────────────────────────────────────── */
+
+.docflow-erd-container {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m, 6px);
+  overflow: hidden;
+  background: var(--background-primary);
+  margin: 1em 0;
+}
+
+/* ── 탭 바 ───────────────────────────────────────────────────────────────── */
+
+.docflow-erd-tab-bar {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  gap: 4px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+  flex-wrap: wrap;
+}
+
+.docflow-erd-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.docflow-erd-tab {
+  padding: 4px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-s, 4px);
+  font-size: var(--font-ui-small);
+  line-height: 1.4;
+  transition: background 100ms, color 100ms;
+}
+
+.docflow-erd-tab:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.docflow-erd-tab.is-active {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.docflow-erd-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.docflow-erd-action-btn {
+  padding: 3px 8px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-s, 4px);
+  font-size: var(--font-ui-smaller);
+  line-height: 1.4;
+  transition: background 100ms, color 100ms, border-color 100ms;
+}
+
+.docflow-erd-action-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+  border-color: var(--background-modifier-border-hover);
+}
+
+/* ── 다이어그램 뷰 ─────────────────────────────────────────────────────────── */
+
+.docflow-erd-diagram-view {
+  overflow: hidden;
+  min-height: 200px;
+  position: relative;
+  background: var(--background-primary);
+}
+
+.docflow-erd-viewport {
+  display: inline-block;
+  transform-origin: 0 0;
+  padding: 20px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.docflow-erd-viewport:active {
+  cursor: grabbing;
+}
+
+.docflow-erd-viewport svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── 테이블 뷰 ───────────────────────────────────────────────────────────── */
+
+.docflow-erd-table-view {
+  padding: 16px 20px;
+  overflow: auto;
+}
+
+.docflow-erd-tables {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.docflow-entity {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s, 4px);
+  overflow: hidden;
+}
+
+.docflow-entity-name {
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  color: var(--text-accent);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-medium);
+  border-bottom: 1px solid var(--background-modifier-border);
+  letter-spacing: 0.02em;
+}
+
+.docflow-entity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-ui-small);
+}
+
+.docflow-entity-table th {
+  padding: 6px 12px;
+  background: var(--background-secondary-alt, var(--background-secondary));
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 2px solid var(--background-modifier-border);
+  font-size: var(--font-ui-smaller);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.docflow-entity-table td {
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+}
+
+.docflow-entity-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.docflow-entity-table tbody tr:hover td {
+  background: var(--background-modifier-hover);
+}
+
+/* ── 제약 뱃지 (PK / FK / UK) ─────────────────────────────────────────────── */
+
+.docflow-key-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-monospace);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.docflow-key-badge--pk {
+  background: var(--color-yellow, #f5c518);
+  color: var(--color-base-100, #000);
+}
+
+.docflow-key-badge--fk {
+  background: var(--color-blue, #3b82f6);
+  color: #fff;
+}
+
+.docflow-key-badge--uk {
+  background: var(--color-green, #22c55e);
+  color: var(--color-base-100, #000);
+}
+
+.docflow-key-badge--pk-fk {
+  background: linear-gradient(
+    90deg,
+    var(--color-yellow, #f5c518) 50%,
+    var(--color-blue, #3b82f6) 50%
+  );
+  color: var(--color-base-100, #000);
+}
+
+/* ── 상태 메시지 ─────────────────────────────────────────────────────────── */
+
+.docflow-erd-error {
+  padding: 16px 20px;
+  color: var(--text-error);
+  background: var(--background-modifier-error, rgba(255, 0, 0, 0.08));
+  margin: 0;
+  font-size: var(--font-ui-small);
+}
+
+.docflow-erd-empty {
+  padding: 16px 0;
+  color: var(--text-faint);
+  font-style: italic;
+  margin: 0;
+  font-size: var(--font-ui-small);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DocFlow — Artifact Explorer View (좌측 사이드바)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 루트 컨테이너 ──────────────────────────────────────────────────────── */
+
+.docflow-explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── 필터 바 ────────────────────────────────────────────────────────────── */
+
+.docflow-explorer-filters {
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.docflow-explorer-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.docflow-explorer-filter-label {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  min-width: 26px;
+  flex-shrink: 0;
+}
+
+.docflow-explorer-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.docflow-explorer-filter-btn {
+  padding: 2px 8px;
+  border: 1px solid var(--background-modifier-border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-s, 4px);
+  font-size: var(--font-ui-smaller);
+  line-height: 1.5;
+  transition: background 80ms, color 80ms, border-color 80ms;
+}
+
+.docflow-explorer-filter-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+  border-color: var(--background-modifier-border-hover);
+}
+
+.docflow-explorer-filter-btn.is-active {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+  font-weight: 600;
+}
+
+/* ── 개수 + 새로고침 ────────────────────────────────────────────────────── */
+
+.docflow-explorer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 10px 4px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  flex-shrink: 0;
+}
+
+.docflow-explorer-count {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+}
+
+.docflow-explorer-refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-s, 4px);
+  transition: background 80ms, color 80ms;
+}
+
+.docflow-explorer-refresh-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.docflow-explorer-refresh-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── 목록 스크롤 영역 ───────────────────────────────────────────────────── */
+
+.docflow-explorer-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0 8px;
+}
+
+/* ── 프로젝트 그룹 ──────────────────────────────────────────────────────── */
+
+.docflow-explorer-group {
+  margin-bottom: 2px;
+}
+
+.docflow-explorer-group-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px 4px 6px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  border-radius: var(--radius-s, 4px);
+  margin: 0 4px;
+  transition: background 80ms;
+}
+
+.docflow-explorer-group-header:hover {
+  background: var(--background-modifier-hover);
+}
+
+.docflow-explorer-group-chevron svg,
+.docflow-explorer-group-folder svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.docflow-explorer-group-name {
+  flex: 1;
+  font-size: var(--font-ui-small);
+  font-weight: 600;
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docflow-explorer-group-header.is-collapsed .docflow-explorer-group-name {
+  color: var(--text-muted);
+}
+
+.docflow-explorer-group-count {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+  background: var(--background-modifier-border);
+  padding: 1px 6px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.docflow-explorer-group-body {
+  padding: 0 4px;
+}
+
+/* ── 항목 ───────────────────────────────────────────────────────────────── */
+
+.docflow-explorer-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: var(--radius-s, 4px);
+  transition: background 80ms;
+}
+
+.docflow-explorer-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.docflow-explorer-item:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: -2px;
+}
+
+.docflow-explorer-item-icon {
+  display: flex;
+  align-items: center;
+  padding-top: 1px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.docflow-explorer-item-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.docflow-explorer-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.docflow-explorer-item-title {
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docflow-explorer-item-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+/* ── 유형 뱃지 ──────────────────────────────────────────────────────────── */
+
+.docflow-explorer-type-badge,
+.docflow-explorer-status-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+}
+
+.docflow-type--erd          { background: rgba(59, 130, 246, 0.15); color: var(--color-blue,   #3b82f6); }
+.docflow-type--api          { background: rgba(34, 197, 94, 0.15);  color: var(--color-green,  #22c55e); }
+.docflow-type--architecture { background: rgba(168, 85, 247, 0.15); color: var(--color-purple, #a855f7); }
+.docflow-type--wbs          { background: rgba(245, 158, 11, 0.15); color: var(--color-yellow, #f59e0b); }
+.docflow-type--requirements { background: rgba(239, 68, 68, 0.15);  color: var(--color-red,    #ef4444); }
+.docflow-type--manual       { background: rgba(20, 184, 166, 0.15); color: var(--color-teal,   #14b8a6); }
+.docflow-type--meeting      { background: rgba(107, 114, 128, 0.15); color: var(--text-muted); }
+
+/* ── 상태 뱃지 ──────────────────────────────────────────────────────────── */
+
+.docflow-status--approved   { background: rgba(34, 197, 94, 0.15);  color: var(--color-green,  #22c55e); }
+.docflow-status--review     { background: rgba(245, 158, 11, 0.15); color: var(--color-yellow, #f59e0b); }
+.docflow-status--draft      { background: var(--background-modifier-border); color: var(--text-muted); }
+.docflow-status--deprecated { background: rgba(239, 68, 68, 0.10);  color: var(--text-faint);  text-decoration: line-through; }
+
+/* ── 빈 상태 ────────────────────────────────────────────────────────────── */
+
+.docflow-explorer-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-faint);
+}
+
+.docflow-explorer-empty-icon {
+  margin-bottom: 10px;
+  opacity: 0.4;
+}
+
+.docflow-explorer-empty-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.docflow-explorer-empty p {
+  margin: 0 0 4px;
+  font-size: var(--font-ui-small);
+}
+
+.docflow-explorer-empty-hint {
+  font-size: var(--font-ui-smaller);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DocFlow — Metadata Panel View (우측 사이드바)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 루트 컨테이너 ──────────────────────────────────────────────────────── */
+
+.docflow-metadata-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 16px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+/* ── 헤더 (타이틀 + 유형 아이콘) ────────────────────────────────────────── */
+
+.docflow-mp-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.docflow-mp-type-icon {
+  display: flex;
+  align-items: center;
+  padding-top: 2px;
+  flex-shrink: 0;
+  color: var(--text-accent);
+}
+
+.docflow-mp-type-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.docflow-mp-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.docflow-mp-title {
+  margin: 0;
+  font-size: var(--font-ui-medium);
+  font-weight: 600;
+  color: var(--text-normal);
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 유형 뱃지 — ArtifactExplorerView 와 공용 클래스 사용 */
+.docflow-mp-type-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-size: var(--font-ui-smaller);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+}
+
+/* ── 상태 섹션 ──────────────────────────────────────────────────────────── */
+
+.docflow-mp-status-section {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.docflow-mp-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: var(--font-ui-small);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.docflow-mp-status--approved   { background: rgba(34, 197, 94, 0.18);  color: var(--color-green,  #22c55e); }
+.docflow-mp-status--review     { background: rgba(245, 158, 11, 0.18); color: var(--color-yellow, #f59e0b); }
+.docflow-mp-status--draft      { background: var(--background-modifier-border); color: var(--text-muted); }
+.docflow-mp-status--deprecated { background: rgba(239, 68, 68, 0.12);  color: var(--color-red, #ef4444); text-decoration: line-through; }
+
+/* ── 공통 섹션 래퍼 ─────────────────────────────────────────────────────── */
+
+.docflow-mp-section {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.docflow-mp-section:last-child {
+  border-bottom: none;
+}
+
+/* ── 섹션 타이틀 ────────────────────────────────────────────────────────── */
+
+.docflow-mp-section-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-ui-smaller);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.docflow-mp-section-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ── 정보 테이블 ────────────────────────────────────────────────────────── */
+
+.docflow-mp-info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.docflow-mp-info-table tr + tr td {
+  padding-top: 5px;
+}
+
+.docflow-mp-info-icon {
+  width: 18px;
+  padding-right: 6px;
+  vertical-align: middle;
+  color: var(--text-muted);
+}
+
+.docflow-mp-info-icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+.docflow-mp-info-label {
+  width: 44px;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.docflow-mp-info-value {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-normal);
+  font-family: var(--font-monospace);
+  vertical-align: middle;
+}
+
+/* ── 태그 목록 ──────────────────────────────────────────────────────────── */
+
+.docflow-mp-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.docflow-mp-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: var(--font-ui-smaller);
+  background: var(--tag-background, var(--background-modifier-border));
+  color: var(--tag-color, var(--text-muted));
+}
+
+/* ── 연관 문서 링크 ─────────────────────────────────────────────────────── */
+
+.docflow-mp-related-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: var(--radius-s, 4px);
+  cursor: pointer;
+  transition: background 80ms;
+}
+
+.docflow-mp-related-link:hover {
+  background: var(--background-modifier-hover);
+}
+
+.docflow-mp-related-link:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: -2px;
+}
+
+.docflow-mp-related-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.docflow-mp-related-icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+.docflow-mp-related-text {
+  font-size: var(--font-ui-small);
+  color: var(--text-accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 빈 상태 ────────────────────────────────────────────────────────────── */
+
+.docflow-mp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-faint);
+  height: 100%;
+}
+
+.docflow-mp-empty-icon {
+  margin-bottom: 10px;
+  opacity: 0.35;
+}
+
+.docflow-mp-empty-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.docflow-mp-empty p {
+  margin: 0 0 3px;
+  font-size: var(--font-ui-small);
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DocFlow — 모달 (유형 선택 / 플레이스홀더 입력 폼)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 공통 설명 텍스트 ────────────────────────────────────────────────────── */
+
+.docflow-modal-desc {
+  margin: 0 0 14px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+/* ── 유형 선택 그리드 ────────────────────────────────────────────────────── */
+
+.docflow-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.docflow-type-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  width: 100%;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s, 4px);
+  cursor: pointer;
+  color: var(--text-normal);
+  text-align: left;
+  transition: background 100ms, border-color 100ms, color 100ms;
+}
+
+.docflow-type-btn:hover {
+  background: var(--interactive-accent);
+  border-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.docflow-type-btn-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.docflow-type-btn:hover .docflow-type-btn-icon {
+  color: var(--text-on-accent);
+}
+
+.docflow-type-btn-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.docflow-type-btn-label {
+  font-size: var(--font-ui-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── 버튼 행 ────────────────────────────────────────────────────────────── */
+
+.docflow-modal-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--background-modifier-border);
+}
