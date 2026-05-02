@@ -4,6 +4,8 @@
 
 DocFlow automatically detects the type of your IT documents — ERD, API specifications, WBS, architecture diagrams, requirements, manuals, and meeting notes — and renders them with purpose-built views, all within your Obsidian vault.
 
+Supports **English and Korean** UI and templates out of the box.
+
 ---
 
 ## Features
@@ -44,7 +46,17 @@ Insert a pre-filled artifact template from the command palette.
 
 - Command: `DocFlow: Insert Artifact Template`
 - Supports all 7 artifact types
-- Prompts for title, project, author — leaves content placeholders in place for you to fill
+- Prompts for title, project, author — leaves content placeholders for you to fill in
+- Templates are provided in **English and Korean**
+
+### Language Support
+All UI labels, status badges, filter buttons, and artifact templates are fully localized.
+
+- **Auto** — follows your system/browser locale
+- **English** — always use English UI and templates
+- **한국어** — always use Korean UI and templates
+
+Change the language in **Settings → DocFlow → Language**. Command names update after re-enabling the plugin.
 
 ---
 
@@ -56,7 +68,7 @@ Insert a pre-filled artifact template from the command palette.
 | API Spec | `api` | Swagger UI |
 | Architecture | `architecture` | Mermaid flowchart (passthrough) |
 | WBS | `wbs` | Mermaid Gantt chart (passthrough) |
-| Requirements | `requirements` | Markdown table view |
+| Requirements | `requirements` | Structured markdown |
 | Manual | `manual` | Structured markdown |
 | Meeting Notes | `meeting` | Structured markdown |
 
@@ -65,14 +77,14 @@ Insert a pre-filled artifact template from the command palette.
 ## Installation
 
 ### From Community Plugins (Recommended)
-1. Open Obsidian Settings → Community Plugins → Browse
+1. Open Obsidian **Settings → Community Plugins → Browse**
 2. Search for **DocFlow**
-3. Click Install, then Enable
+3. Click **Install**, then **Enable**
 
 ### Manual Installation
-1. Download `main.js`, `manifest.json`, `styles.css` from the [latest release](https://github.com/docflow-plugin/docflow/releases/latest)
+1. Download `main.js`, `manifest.json`, `styles.css` from the [latest release](https://github.com/GS-AX/docflow-obsidian/releases/latest)
 2. Copy all three files to `<your-vault>/.obsidian/plugins/docflow/`
-3. Reload Obsidian and enable the plugin in Settings → Community Plugins
+3. Reload Obsidian and enable the plugin under **Settings → Community Plugins**
 
 ---
 
@@ -98,7 +110,7 @@ related: []
 erDiagram
   USER {
     int id PK
-    string email
+    string email UK
     string name
     datetime created_at
   }
@@ -110,6 +122,8 @@ erDiagram
   USER ||--o{ ORDER : "places"
 ```
 ~~~
+
+Switch between the **Diagram** and **Table** views using the tab buttons above the diagram. Export to PNG or SVG with the download button.
 
 ### Rendering an API Spec
 
@@ -145,7 +159,9 @@ paths:
 3. Run **DocFlow: Insert Artifact Template**
 4. Select an artifact type
 5. Fill in the title, project, and author fields
-6. Click **템플릿 삽입**
+6. Click **Insert Template**
+
+The template language matches the current language setting (English or Korean).
 
 ### Auto-detection
 
@@ -167,7 +183,7 @@ Auto-detection can be disabled in Settings if you prefer to set types explicitly
 
 | Field | Type | Required | Default | Description |
 |-------|------|----------|---------|-------------|
-| `type` | string | Yes | — | Artifact type (`erd`, `api`, `architecture`, `wbs`, `requirements`, `manual`, `meeting`) |
+| `type` | string | **Yes** | — | Artifact type (`erd`, `api`, `architecture`, `wbs`, `requirements`, `manual`, `meeting`) |
 | `title` | string | No | File name | Display title |
 | `project` | string | No | — | Project name (used for grouping in the Explorer) |
 | `version` | string | No | `1.0.0` | Semantic version |
@@ -182,18 +198,19 @@ Auto-detection can be disabled in Settings if you prefer to set types explicitly
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Auto type detection | ON | Detect artifact type from file content and path when `type` is not set in frontmatter |
+| Language | Auto | UI language and template language. `Auto` follows your system locale · `English` · `한국어` |
+| Auto Type Detection | ON | Detect artifact type from file content and path when `type` is not set in frontmatter |
 | Swagger Try it out | OFF | Enable live HTTP requests in the API renderer |
-| Metadata panel auto-open | ON | Automatically open the metadata panel when entering Reading View for an artifact file |
-| Diagram theme | Auto | `Auto` follows Obsidian's theme · `Light` · `Dark` |
-| Scan paths | (all) | Comma-separated folder paths to scan. Leave empty to scan the entire vault |
+| Diagram Theme | Auto | `Auto` follows Obsidian's theme · `Light` · `Dark` |
+| Auto-open Metadata Panel | ON | Automatically open the metadata panel when entering Reading View for an artifact file |
+| Scan Paths | (all) | Comma-separated folder paths to scan. Leave empty to scan the entire vault |
 
 ---
 
 ## Requirements
 
 - Obsidian **1.4.0** or later
-- Works on desktop and mobile
+- Works on **desktop and mobile**
 
 ---
 
