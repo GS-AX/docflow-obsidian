@@ -91,6 +91,13 @@ export const ko: Translations = {
   settingLanguageEn:          'English',
   settingLanguageKo:          '한국어',
 
+  // ── Commands & ribbon ─────────────────────────────────────────────────────
+  cmdInsertTemplate:      '산출물 템플릿 삽입',
+  cmdOpenExplorer:        'Artifact Explorer 열기',
+  cmdOpenMetadata:        '메타데이터 패널 열기',
+  ribbonTooltip:          'DocFlow Explorer 열기',
+  langChangedNotice:      'DocFlow: 커맨드 이름을 갱신하려면 플러그인을 재활성화하세요.',
+
   // ── Main notices ───────────────────────────────────────────────────────────
   mainRendererFailed:
     'DocFlow: 렌더러를 초기화하지 못했습니다. ' +

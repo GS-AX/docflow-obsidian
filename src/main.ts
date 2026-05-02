@@ -44,26 +44,27 @@ export default class DocFlowPlugin extends Plugin {
     }
 
     // 5. 리본 아이콘
-    this.addRibbonIcon('layers', 'Open DocFlow Explorer', () => {
+    this.addRibbonIcon('layers', t('ribbonTooltip'), () => {
       void this.activateView(ARTIFACT_EXPLORER_VIEW_TYPE, 'left');
     });
 
-    // 6. 커맨드 팔레트
+    // 6. 커맨드 팔레트 — 이름은 로드 시점의 언어 설정을 반영한다.
+    //    언어를 변경한 후 커맨드 이름을 갱신하려면 플러그인 재활성화가 필요하다.
     this.addCommand({
       id:       'insert-template',
-      name:     'Insert Artifact Template',
+      name:     t('cmdInsertTemplate'),
       callback: () => openTemplateInserter(this.app),
     });
 
     this.addCommand({
       id:       'open-explorer',
-      name:     'Open Artifact Explorer',
+      name:     t('cmdOpenExplorer'),
       callback: () => void this.activateView(ARTIFACT_EXPLORER_VIEW_TYPE, 'left'),
     });
 
     this.addCommand({
       id:       'open-metadata-panel',
-      name:     'Open Metadata Panel',
+      name:     t('cmdOpenMetadata'),
       callback: () => void this.activateView(METADATA_PANEL_VIEW_TYPE, 'right'),
     });
 

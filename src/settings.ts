@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, Notice, PluginSettingTab, Setting } from 'obsidian';
 import DocFlowPlugin from './main';
 import { t, initI18n } from './i18n';
 
@@ -32,6 +32,7 @@ export class DocFlowSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
           initI18n(() => this.plugin.settings.language);
           this.plugin.refreshAllViews();
+          new Notice(t('langChangedNotice'));
           // 설정 탭 자체도 현재 언어로 다시 그린다.
           this.display();
         }),

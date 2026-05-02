@@ -88,6 +88,13 @@ export const en = {
   settingLanguageEn:          'English',
   settingLanguageKo:          '한국어',
 
+  // ── Commands & ribbon ─────────────────────────────────────────────────────
+  cmdInsertTemplate:      'Insert Artifact Template',
+  cmdOpenExplorer:        'Open Artifact Explorer',
+  cmdOpenMetadata:        'Open Metadata Panel',
+  ribbonTooltip:          'Open DocFlow Explorer',
+  langChangedNotice:      'DocFlow: Re-enable the plugin to update command names.',
+
   // ── Main notices ───────────────────────────────────────────────────────────
   mainRendererFailed:
     'DocFlow: Failed to initialize renderers. ' +
