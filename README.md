@@ -8,6 +8,18 @@ Supports **English and Korean** UI and templates out of the box.
 
 ---
 
+## Screenshots
+
+![Artifact Explorer and Template Inserter](docs/template.png)
+
+*Artifact Explorer (left) with type/status filters, and the Insert Artifact Template modal*
+
+![Architecture Diagram rendered in Reading View](docs/diagram.png)
+
+*Architecture diagram rendered from a Mermaid flowchart block, with the Artifact Explorer showing project artifacts grouped by project*
+
+---
+
 ## Features
 
 ### ERD Renderer
