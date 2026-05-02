@@ -14,13 +14,13 @@ import manualTemplate       from '../../template/manual-template.md';
 // ── 유형 표시 정보 ────────────────────────────────────────────────────────────
 
 const TYPE_META: Record<ArtifactType, { label: string; icon: string }> = {
-  erd:          { label: 'ERD',    icon: 'table-2' },
-  api:          { label: 'API',    icon: 'zap' },
-  architecture: { label: '아키텍처', icon: 'share-2' },
-  wbs:          { label: 'WBS',    icon: 'calendar-range' },
-  requirements: { label: '요구사항', icon: 'list-checks' },
-  manual:       { label: '매뉴얼',  icon: 'book-open' },
-  meeting:      { label: '회의록',  icon: 'users' },
+  erd:          { label: 'ERD',          icon: 'table-2' },
+  api:          { label: 'API',          icon: 'zap' },
+  architecture: { label: 'Architecture', icon: 'share-2' },
+  wbs:          { label: 'WBS',          icon: 'calendar-range' },
+  requirements: { label: 'Requirements', icon: 'list-checks' },
+  manual:       { label: 'Manual',       icon: 'book-open' },
+  meeting:      { label: 'Meeting',      icon: 'users' },
 };
 
 // ── 템플릿 맵 ─────────────────────────────────────────────────────────────────
@@ -78,7 +78,7 @@ function extractFrontmatterPlaceholders(content: string): string[] {
 function insertIntoActiveEditor(app: App, content: string): void {
   const editor = app.workspace.getActiveViewOfType(MarkdownView)?.editor;
   if (!editor) {
-    new Notice('편집 중인 파일이 없습니다. 파일을 먼저 열어주세요.');
+    new Notice('No active editor. Open a file first.');
     return;
   }
   if (editor.getValue().trim() === '') {
@@ -87,7 +87,7 @@ function insertIntoActiveEditor(app: App, content: string): void {
   } else {
     editor.replaceSelection(content);
   }
-  new Notice('템플릿이 삽입되었습니다.');
+  new Notice('Template inserted.');
 }
 
 // ── 유형 선택 모달 ────────────────────────────────────────────────────────────
@@ -101,12 +101,12 @@ class TypeSelectModal extends Modal {
   }
 
   onOpen(): void {
-    this.titleEl.setText('산출물 템플릿 삽입');
+    this.titleEl.setText('Insert Artifact Template');
     const { contentEl } = this;
 
     contentEl.createEl('p', {
       cls: 'docflow-modal-desc',
-      text: '삽입할 산출물 유형을 선택하세요.',
+      text: 'Select the artifact type to insert.',
     });
 
     const grid = contentEl.createEl('div', { cls: 'docflow-type-grid' });
@@ -152,12 +152,12 @@ class PlaceholderFormModal extends Modal {
     // 날짜 필드 자동 채우기
     const today = new Date().toISOString().slice(0, 10);
     this.values = new Map(
-      placeholders.map(p => [p, (p === '날짜' || p === 'YYYY-MM-DD') ? today : '']),
+      placeholders.map(p => [p, (p === 'date' || p === 'YYYY-MM-DD') ? today : '']),
     );
   }
 
   onOpen(): void {
-    this.titleEl.setText(`${TYPE_META[this.type].label} 템플릿 정보 입력`);
+    this.titleEl.setText(`${TYPE_META[this.type].label} — Fill in Details`);
     const { contentEl } = this;
 
     let firstInput: HTMLInputElement | null = null;
@@ -173,10 +173,10 @@ class PlaceholderFormModal extends Modal {
 
     const btnRow = contentEl.createEl('div', { cls: 'docflow-modal-btns' });
 
-    btnRow.createEl('button', { text: '취소' })
+    btnRow.createEl('button', { text: 'Cancel' })
       .addEventListener('click', () => this.close());
 
-    btnRow.createEl('button', { cls: 'mod-cta', text: '템플릿 삽입' })
+    btnRow.createEl('button', { cls: 'mod-cta', text: 'Insert Template' })
       .addEventListener('click', () => this.submit());
 
     // Enter 키로 제출

@@ -1,94 +1,94 @@
 ---
-title: {{제목}} 업무 매뉴얼
+title: {{title}} Manual
 type: manual
-project: {{프로젝트명}}
+project: {{project}}
 version: 1.0.0
 status: draft
-author: {{작성자}}
+author: {{author}}
 tags: [manual, ops]
 related: []
 ---
 
-## 목차
+## Table of Contents
 
-<!-- DocFlow가 H2/H3 헤딩 기반으로 자동 생성 -->
+<!-- auto-generated from H2/H3 headings -->
 
-## 1. 개요
+## 1. Overview
 
-### 1.1 목적
+### 1.1 Purpose
 
-이 매뉴얼은 {{목적}}을 위해 작성되었다.
+This manual covers {{purpose}}.
 
-### 1.2 적용 대상
+### 1.2 Target Audience
 
-{{이 매뉴얼을 사용하는 대상}}
+{{target audience}}
 
-### 1.3 사전 준비 사항
+### 1.3 Prerequisites
 
-- {{사전 준비 1}}
-- {{사전 준비 2}}
+- {{prerequisite 1}}
+- {{prerequisite 2}}
 
 ---
 
-## 2. {{주요 절차 1}}
+## 2. {{procedure 1}}
 
-### 2.1 {{세부 절차}}
+### 2.1 {{step}}
 
-{{절차 설명}}
+{{description}}
 
 ```bash
-# 예시 명령어
+# example command
 {{command}}
 ```
 
-> ⚠️ **주의:** {{주의 사항}}
+> ⚠️ **Note:** {{caution}}
 
-### 2.2 {{세부 절차}}
+### 2.2 {{step}}
 
-{{절차 설명}}
-
----
-
-## 3. {{주요 절차 2}}
-
-### 3.1 {{세부 절차}}
-
-{{절차 설명}}
+{{description}}
 
 ---
 
-## 4. 장애 대응
+## 3. {{procedure 2}}
 
-### 4.1 {{장애 유형 1}}
+### 3.1 {{step}}
 
-**증상:** {{증상 설명}}
-
-**원인:** {{원인 설명}}
-
-**조치 방법:**
-1. {{조치 1}}
-2. {{조치 2}}
-3. {{조치 3}}
-
-### 4.2 {{장애 유형 2}}
-
-**증상:** {{증상 설명}}
-
-**조치 방법:**
-1. {{조치 1}}
-2. {{조치 2}}
+{{description}}
 
 ---
 
-## 5. 문의 및 에스컬레이션
+## 4. Troubleshooting
 
-| 상황 | 담당자 | 연락처 |
-|------|-------|-------|
-| 일반 문의 | {{담당자}} | {{연락처}} |
-| 긴급 장애 | {{담당자}} | {{연락처}} |
+### 4.1 {{issue type 1}}
 
-## 변경 이력
+**Symptom:** {{symptom}}
 
-| 버전 | 날짜 | 변경 내용 | 작성자 |
-|------|------|---------|-------|
-| 1.0.0 | {{날짜}} | 최초 작성 | {{작성자}} |
+**Cause:** {{cause}}
+
+**Resolution:**
+1. {{step 1}}
+2. {{step 2}}
+3. {{step 3}}
+
+### 4.2 {{issue type 2}}
+
+**Symptom:** {{symptom}}
+
+**Resolution:**
+1. {{step 1}}
+2. {{step 2}}
+
+---
+
+## 5. Contacts
+
+| Case | Contact | Info |
+|------|---------|------|
+| General | {{contact}} | {{contact info}} |
+| Urgent | {{contact}} | {{contact info}} |
+
+## Change History
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | {{date}} | Initial revision | {{author}} |

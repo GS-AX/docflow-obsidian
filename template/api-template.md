@@ -1,26 +1,26 @@
 ---
-title: {{제목}} API 명세
+title: {{title}} API Spec
 type: api
-project: {{프로젝트명}}
+project: {{project}}
 version: 1.0.0
 status: draft
-author: {{작성자}}
+author: {{author}}
 tags: [api, rest]
 related: []
 ---
 
-## 개요
+## Overview
 
-{{API 설명}}
+{{API description}}
 
-## 명세
+## Specification
 
 ```yaml
 openapi: 3.0.0
 info:
-  title: {{API 이름}}
+  title: {{API name}}
   version: 1.0.0
-  description: {{API 설명}}
+  description: {{API description}}
 
 servers:
   - url: https://api.example.com/v1
@@ -31,7 +31,7 @@ servers:
 paths:
   /resources:
     get:
-      summary: 목록 조회
+      summary: List
       tags: [Resource]
       parameters:
         - name: page
@@ -46,7 +46,7 @@ paths:
             default: 20
       responses:
         '200':
-          description: 성공
+          description: Success
           content:
             application/json:
               schema:
@@ -59,10 +59,10 @@ paths:
                   total:
                     type: integer
         '401':
-          description: 인증 실패
+          description: Unauthorized
 
     post:
-      summary: 생성
+      summary: Create
       tags: [Resource]
       requestBody:
         required: true
@@ -72,13 +72,13 @@ paths:
               $ref: '#/components/schemas/ResourceCreateRequest'
       responses:
         '201':
-          description: 생성 성공
+          description: Created
         '400':
-          description: 잘못된 요청
+          description: Bad Request
 
   /resources/{id}:
     get:
-      summary: 단건 조회
+      summary: Get by ID
       tags: [Resource]
       parameters:
         - name: id
@@ -88,13 +88,13 @@ paths:
             type: integer
       responses:
         '200':
-          description: 성공
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Resource'
         '404':
-          description: 리소스 없음
+          description: Not Found
 
 components:
   schemas:
@@ -127,8 +127,8 @@ security:
   - bearerAuth: []
 ```
 
-## 변경 이력
+## Change History
 
-| 버전 | 날짜 | 변경 내용 | 작성자 |
-|------|------|---------|-------|
-| 1.0.0 | {{날짜}} | 최초 작성 | {{작성자}} |
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | {{date}} | Initial revision | {{author}} |

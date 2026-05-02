@@ -1,19 +1,19 @@
 ---
-title: {{제목}}
+title: {{title}}
 type: erd
-project: {{프로젝트명}}
+project: {{project}}
 version: 1.0.0
 status: draft
-author: {{작성자}}
+author: {{author}}
 tags: [database]
 related: []
 ---
 
-## 개요
+## Overview
 
-{{ERD 설명}}
+{{ERD description}}
 
-## 다이어그램
+## Diagram
 
 ```mermaid
 erDiagram
@@ -30,26 +30,26 @@ erDiagram
   ENTITY_A ||--o{ ENTITY_B : "has"
 ```
 
-## 테이블 설명
+## Table Descriptions
 
 ### ENTITY_A
 
-| 컬럼 | 타입 | 설명 |
-|------|------|------|
+| Column | Type | Description |
+|--------|------|-------------|
 | id | INT | PK, Auto Increment |
-| name | VARCHAR(100) | 이름 |
-| created_at | DATETIME | 생성일시 |
+| name | VARCHAR(100) | Name |
+| created_at | DATETIME | Created at |
 
 ### ENTITY_B
 
-| 컬럼 | 타입 | 설명 |
-|------|------|------|
+| Column | Type | Description |
+|--------|------|-------------|
 | id | INT | PK, Auto Increment |
 | entity_a_id | INT | FK → ENTITY_A.id |
-| value | VARCHAR(255) | 값 |
+| value | VARCHAR(255) | Value |
 
-## 변경 이력
+## Change History
 
-| 버전 | 날짜 | 변경 내용 | 작성자 |
-|------|------|---------|-------|
-| 1.0.0 | {{날짜}} | 최초 작성 | {{작성자}} |
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | {{date}} | Initial revision | {{author}} |

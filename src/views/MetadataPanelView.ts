@@ -9,20 +9,20 @@ export const METADATA_PANEL_VIEW_TYPE = 'docflow-metadata-panel';
 // ── 표시 메타 ──────────────────────────────────────────────────────────────────
 
 const TYPE_META: Record<ArtifactType, { label: string; icon: string }> = {
-  erd:          { label: 'ERD',   icon: 'table-2' },
-  api:          { label: 'API',   icon: 'zap' },
-  architecture: { label: '아키텍처', icon: 'share-2' },
-  wbs:          { label: 'WBS',   icon: 'calendar-range' },
-  requirements: { label: '요구사항', icon: 'list-checks' },
-  manual:       { label: '매뉴얼', icon: 'book-open' },
-  meeting:      { label: '회의록', icon: 'users' },
+  erd:          { label: 'ERD',          icon: 'table-2' },
+  api:          { label: 'API',          icon: 'zap' },
+  architecture: { label: 'Architecture', icon: 'share-2' },
+  wbs:          { label: 'WBS',          icon: 'calendar-range' },
+  requirements: { label: 'Requirements', icon: 'list-checks' },
+  manual:       { label: 'Manual',       icon: 'book-open' },
+  meeting:      { label: 'Meeting',      icon: 'users' },
 };
 
 const STATUS_META: Record<ArtifactStatus, { label: string; mod: string }> = {
-  draft:      { label: '초안',   mod: 'draft' },
-  review:     { label: '검토중', mod: 'review' },
-  approved:   { label: '승인',   mod: 'approved' },
-  deprecated: { label: '구버전', mod: 'deprecated' },
+  draft:      { label: 'Draft',       mod: 'draft' },
+  review:     { label: 'In Review',   mod: 'review' },
+  approved:   { label: 'Approved',    mod: 'approved' },
+  deprecated: { label: 'Deprecated',  mod: 'deprecated' },
 };
 
 // ── 위키링크 파싱 ──────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ export class MetadataPanelView extends ItemView {
   }
 
   getViewType(): string  { return METADATA_PANEL_VIEW_TYPE; }
-  getDisplayText(): string { return 'DocFlow 메타데이터'; }
+  getDisplayText(): string { return 'DocFlow Metadata'; }
   getIcon(): string { return 'info'; }
 
   // ── 생명주기 ──────────────────────────────────────────────────────────────────
@@ -80,13 +80,13 @@ export class MetadataPanelView extends ItemView {
     root.addClass('docflow-metadata-panel');
 
     if (!this.currentFile) {
-      this.renderEmpty(root, '파일을 열면\n메타데이터가 표시됩니다.');
+      this.renderEmpty(root, 'Open a file to\nview its metadata.');
       return;
     }
 
     const fm = getFrontmatter(this.currentFile, this.app);
     if (!fm.type || !ARTIFACT_TYPES.includes(fm.type as ArtifactType)) {
-      this.renderEmpty(root, 'DocFlow 산출물이 아닙니다.\nfrontmatter에 type 을 추가하세요.');
+      this.renderEmpty(root, 'Not a DocFlow artifact.\nAdd a type field to the frontmatter.');
       return;
     }
 
@@ -144,12 +144,12 @@ export class MetadataPanelView extends ItemView {
       tr.createEl('td', { cls: 'docflow-mp-info-value', text: value });
     };
 
-    addRow('버전', 'tag', version);
-    if (author) addRow('작성자', 'user', author);
+    addRow('Version', 'tag', version);
+    if (author) addRow('Author', 'user', author);
     addRow(
-      '수정일',
+      'Modified',
       'clock',
-      new Date(mtime).toLocaleDateString('ko-KR', {
+      new Date(mtime).toLocaleDateString('en-US', {
         year: 'numeric', month: '2-digit', day: '2-digit',
       }),
     );
@@ -159,7 +159,7 @@ export class MetadataPanelView extends ItemView {
 
   private renderTags(root: HTMLElement, tags: string[]): void {
     const section = root.createEl('div', { cls: 'docflow-mp-section' });
-    this.renderSectionTitle(section, 'tag', '태그');
+    this.renderSectionTitle(section, 'tag', 'Tags');
     const tagList = section.createEl('div', { cls: 'docflow-mp-tag-list' });
     for (const tag of tags) {
       tagList.createEl('span', { cls: 'docflow-mp-tag', text: tag.startsWith('#') ? tag : `#${tag}` });
@@ -170,7 +170,7 @@ export class MetadataPanelView extends ItemView {
 
   private renderRelated(root: HTMLElement, related: string[]): void {
     const section = root.createEl('div', { cls: 'docflow-mp-section' });
-    this.renderSectionTitle(section, 'link', '연관 문서');
+    this.renderSectionTitle(section, 'link', 'Related');
 
     for (const raw of related) {
       const parsed = parseWikiLink(raw);
@@ -179,7 +179,7 @@ export class MetadataPanelView extends ItemView {
 
       const link = section.createEl('div', {
         cls: 'docflow-mp-related-link',
-        attr: { role: 'button', tabindex: '0', 'aria-label': `${displayText} 열기` },
+        attr: { role: 'button', tabindex: '0', 'aria-label': `Open ${displayText}` },
       });
 
       const linkIcon = link.createEl('span', { cls: 'docflow-mp-related-icon' });

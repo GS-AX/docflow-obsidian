@@ -1,45 +1,45 @@
 ---
-title: {{제목}} 요구사항정의서
+title: {{title}} Requirements
 type: requirements
-project: {{프로젝트명}}
+project: {{project}}
 version: 1.0.0
 status: draft
-author: {{작성자}}
+author: {{author}}
 tags: [requirements]
 related: []
 ---
 
-## 문서 목적
+## Purpose
 
-{{이 문서의 목적과 범위}}
+{{document purpose and scope}}
 
-## 기능 요구사항
+## Functional Requirements
 
-| ID | 분류 | 요구사항 | 우선순위 | 상태 | 담당자 |
-|----|------|---------|---------|------|-------|
-| F-001 | {{분류}} | {{요구사항 내용}} | 필수 | 대기 | {{담당자}} |
-| F-002 | {{분류}} | {{요구사항 내용}} | 필수 | 대기 | {{담당자}} |
-| F-003 | {{분류}} | {{요구사항 내용}} | 보통 | 대기 | {{담당자}} |
-| F-004 | {{분류}} | {{요구사항 내용}} | 낮음 | 대기 | {{담당자}} |
+| ID | Category | Requirement | Priority | Status | Assignee |
+|----|----------|-------------|----------|--------|----------|
+| F-001 | {{category}} | {{requirement}} | High | Pending | {{assignee}} |
+| F-002 | {{category}} | {{requirement}} | High | Pending | {{assignee}} |
+| F-003 | {{category}} | {{requirement}} | Medium | Pending | {{assignee}} |
+| F-004 | {{category}} | {{requirement}} | Low | Pending | {{assignee}} |
 
-> **우선순위:** 필수 / 보통 / 낮음  
-> **상태:** 대기 / 진행중 / 완료 / 보류
+> **Priority:** High / Medium / Low  
+> **Status:** Pending / In Progress / Done / On Hold
 
-## 비기능 요구사항
+## Non-functional Requirements
 
-| ID | 항목 | 요구사항 | 측정 기준 |
-|----|------|---------|---------|
-| N-001 | 성능 | {{요구사항}} | {{측정 기준}} |
-| N-002 | 보안 | {{요구사항}} | {{측정 기준}} |
-| N-003 | 가용성 | {{요구사항}} | {{측정 기준}} |
+| ID | Item | Requirement | Metric |
+|----|------|-------------|--------|
+| N-001 | Performance | {{requirement}} | {{metric}} |
+| N-002 | Security | {{requirement}} | {{metric}} |
+| N-003 | Availability | {{requirement}} | {{metric}} |
 
-## 제약 사항
+## Constraints
 
-- {{제약 사항 1}}
-- {{제약 사항 2}}
+- {{constraint 1}}
+- {{constraint 2}}
 
-## 변경 이력
+## Change History
 
-| 버전 | 날짜 | 변경 내용 | 작성자 |
-|------|------|---------|-------|
-| 1.0.0 | {{날짜}} | 최초 작성 | {{작성자}} |
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | {{date}} | Initial revision | {{author}} |

@@ -1,52 +1,52 @@
 ---
-title: {{제목}} WBS
+title: {{title}} WBS
 type: wbs
-project: {{프로젝트명}}
+project: {{project}}
 version: 1.0.0
 status: draft
-author: {{작성자}}
+author: {{author}}
 tags: [schedule, wbs]
 related: []
 ---
 
-## 전체 일정
+## Schedule
 
 ```mermaid
 gantt
-  title {{프로젝트명}} 개발 일정
+  title {{project}} Development Schedule
   dateFormat YYYY-MM-DD
-  section 기획
-    요구사항 정의     :done,    req,  2026-01-01, 2026-01-14
-    설계              :done,    des,  2026-01-15, 2026-01-28
-  section 개발
-    백엔드 개발       :active,  be,   2026-02-01, 2026-03-15
-    프론트엔드 개발   :         fe,   2026-03-01, 2026-04-15
+  section Planning
+    Requirements     :done,    req,  2026-01-01, 2026-01-14
+    Design           :done,    des,  2026-01-15, 2026-01-28
+  section Development
+    Backend Dev      :active,  be,   2026-02-01, 2026-03-15
+    Frontend Dev     :         fe,   2026-03-01, 2026-04-15
   section QA
-    테스트            :         qa,   2026-04-16, 2026-04-30
-  section 배포
-    운영 배포         :         dep,  2026-05-01, 2026-05-07
+    Testing          :         qa,   2026-04-16, 2026-04-30
+  section Deployment
+    Production Deploy:         dep,  2026-05-01, 2026-05-07
 ```
 
-## 마일스톤
+## Milestones
 
-| 마일스톤 | 목표일 | 상태 | 비고 |
-|---------|-------|------|------|
-| 기획 완료 | 2026-01-28 | ✅ 완료 | |
-| 개발 완료 | 2026-04-15 | 🔄 진행중 | |
-| QA 완료 | 2026-04-30 | ⏳ 대기 | |
-| 출시 | 2026-05-07 | ⏳ 대기 | |
+| Milestone | Target | Status | Notes |
+|-----------|--------|--------|-------|
+| Planning Done | 2026-01-28 | ✅ Done | |
+| Dev Done | 2026-04-15 | 🔄 In Progress | |
+| QA Done | 2026-04-30 | ⏳ Pending | |
+| Release | 2026-05-07 | ⏳ Pending | |
 
-## 태스크 목록
+## Task List
 
-| ID | 태스크 | 담당자 | 시작일 | 종료일 | 상태 |
-|----|--------|-------|-------|-------|------|
-| T-001 | 요구사항 정의 | {{담당자}} | 2026-01-01 | 2026-01-14 | 완료 |
-| T-002 | 설계 | {{담당자}} | 2026-01-15 | 2026-01-28 | 완료 |
-| T-003 | 백엔드 개발 | {{담당자}} | 2026-02-01 | 2026-03-15 | 진행중 |
-| T-004 | 프론트엔드 개발 | {{담당자}} | 2026-03-01 | 2026-04-15 | 대기 |
+| ID | Task | Assignee | Start | End | Status |
+|----|------|----------|-------|-----|--------|
+| T-001 | Requirements | {{assignee}} | 2026-01-01 | 2026-01-14 | Done |
+| T-002 | Design | {{assignee}} | 2026-01-15 | 2026-01-28 | Done |
+| T-003 | Backend Dev | {{assignee}} | 2026-02-01 | 2026-03-15 | In Progress |
+| T-004 | Frontend Dev | {{assignee}} | 2026-03-01 | 2026-04-15 | Pending |
 
-## 변경 이력
+## Change History
 
-| 버전 | 날짜 | 변경 내용 | 작성자 |
-|------|------|---------|-------|
-| 1.0.0 | {{날짜}} | 최초 작성 | {{작성자}} |
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | {{date}} | Initial revision | {{author}} |

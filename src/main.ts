@@ -37,8 +37,8 @@ export default class DocFlowPlugin extends Plugin {
     } catch (err) {
       console.error('DocFlow: 렌더러 등록 실패', err);
       new Notice(
-        'DocFlow: 렌더러를 초기화하지 못했습니다. ' +
-        '플러그인을 다시 활성화하거나 Obsidian을 재시작해 보세요.',
+        'DocFlow: Failed to initialize renderers. ' +
+        'Try re-enabling the plugin or restarting Obsidian.',
       );
     }
 
@@ -111,7 +111,7 @@ export default class DocFlowPlugin extends Plugin {
       this.settings = Object.assign({}, DEFAULT_SETTINGS, saved) as DocFlowSettings;
     } catch (err) {
       console.error('DocFlow: 설정 로드 실패, 기본값 사용', err);
-      new Notice('DocFlow: 설정을 불러오지 못했습니다. 기본값으로 실행합니다.');
+      new Notice('DocFlow: Failed to load settings. Using defaults.');
       this.settings = { ...DEFAULT_SETTINGS };
     }
   }
@@ -121,7 +121,7 @@ export default class DocFlowPlugin extends Plugin {
       await this.saveData(this.settings);
     } catch (err) {
       console.error('DocFlow: 설정 저장 실패', err);
-      new Notice('DocFlow: 설정을 저장하지 못했습니다.');
+      new Notice('DocFlow: Failed to save settings.');
     }
   }
 

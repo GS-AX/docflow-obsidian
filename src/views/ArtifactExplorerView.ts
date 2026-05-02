@@ -9,20 +9,20 @@ export const ARTIFACT_EXPLORER_VIEW_TYPE = 'docflow-artifact-explorer';
 // ── 유형별 표시 정보 ───────────────────────────────────────────────────────────
 
 const TYPE_META: Record<ArtifactType, { label: string; icon: string }> = {
-  erd:          { label: 'ERD',   icon: 'table-2' },
-  api:          { label: 'API',   icon: 'zap' },
-  architecture: { label: '아키텍처', icon: 'share-2' },
-  wbs:          { label: 'WBS',   icon: 'calendar-range' },
-  requirements: { label: '요구사항', icon: 'list-checks' },
-  manual:       { label: '매뉴얼', icon: 'book-open' },
-  meeting:      { label: '회의록', icon: 'users' },
+  erd:          { label: 'ERD',          icon: 'table-2' },
+  api:          { label: 'API',          icon: 'zap' },
+  architecture: { label: 'Architecture', icon: 'share-2' },
+  wbs:          { label: 'WBS',          icon: 'calendar-range' },
+  requirements: { label: 'Requirements', icon: 'list-checks' },
+  manual:       { label: 'Manual',       icon: 'book-open' },
+  meeting:      { label: 'Meeting',      icon: 'users' },
 };
 
 const STATUS_LABEL: Record<ArtifactStatus, string> = {
-  draft:      '초안',
-  review:     '검토중',
-  approved:   '승인',
-  deprecated: '구버전',
+  draft:      'Draft',
+  review:     'In Review',
+  approved:   'Approved',
+  deprecated: 'Deprecated',
 };
 
 // ── 내부 타입 ──────────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ export class ArtifactExplorerView extends ItemView {
   }
 
   getViewType(): string { return ARTIFACT_EXPLORER_VIEW_TYPE; }
-  getDisplayText(): string { return 'DocFlow 탐색기'; }
+  getDisplayText(): string { return 'DocFlow Explorer'; }
   getIcon(): string { return 'layers'; }
 
   // ── 생명주기 ──────────────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ export class ArtifactExplorerView extends ItemView {
 
     // ── 유형 필터 ─────────────────────────────────────────────────────────────
     const typeRow = bar.createEl('div', { cls: 'docflow-explorer-filter-row' });
-    typeRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: '유형' });
+    typeRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: 'Type' });
     const typeGroup = typeRow.createEl('div', { cls: 'docflow-explorer-filter-group' });
 
     const mkTypeBtn = (value: ArtifactType | 'all', label: string) => {
@@ -162,12 +162,12 @@ export class ArtifactExplorerView extends ItemView {
       });
     };
 
-    mkTypeBtn('all', '전체');
+    mkTypeBtn('all', 'All');
     for (const t of ARTIFACT_TYPES) mkTypeBtn(t, TYPE_META[t].label);
 
     // ── 상태 필터 ─────────────────────────────────────────────────────────────
     const statusRow = bar.createEl('div', { cls: 'docflow-explorer-filter-row' });
-    statusRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: '상태' });
+    statusRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: 'Status' });
     const statusGroup = statusRow.createEl('div', { cls: 'docflow-explorer-filter-group' });
 
     const mkStatusBtn = (value: ArtifactStatus | 'all', label: string) => {
@@ -182,7 +182,7 @@ export class ArtifactExplorerView extends ItemView {
       });
     };
 
-    mkStatusBtn('all', '전체');
+    mkStatusBtn('all', 'All');
     mkStatusBtn('approved',   STATUS_LABEL.approved);
     mkStatusBtn('review',     STATUS_LABEL.review);
     mkStatusBtn('draft',      STATUS_LABEL.draft);
@@ -190,11 +190,11 @@ export class ArtifactExplorerView extends ItemView {
 
     // ── 개수 + 새로고침 ────────────────────────────────────────────────────────
     const meta = bar.createEl('div', { cls: 'docflow-explorer-meta' });
-    meta.createEl('span', { cls: 'docflow-explorer-count', text: `${totalCount}개` });
+    meta.createEl('span', { cls: 'docflow-explorer-count', text: `${totalCount} items` });
 
     const refreshBtn = meta.createEl('button', {
       cls: 'docflow-explorer-refresh-btn',
-      attr: { 'aria-label': '새로고침' },
+      attr: { 'aria-label': 'Refresh' },
     });
     setIcon(refreshBtn, 'refresh-cw');
     refreshBtn.addEventListener('click', () => void this.refresh());
@@ -227,11 +227,11 @@ export class ArtifactExplorerView extends ItemView {
     const empty = listEl.createEl('div', { cls: 'docflow-explorer-empty' });
     const iconWrap = empty.createEl('div', { cls: 'docflow-explorer-empty-icon' });
     setIcon(iconWrap, 'inbox');
-    empty.createEl('p', { text: '산출물이 없습니다.' });
+    empty.createEl('p', { text: 'No artifacts found.' });
     if (this.typeFilter !== 'all' || this.statusFilter !== 'all') {
       empty.createEl('p', {
         cls: 'docflow-explorer-empty-hint',
-        text: '필터를 변경해 보세요.',
+        text: 'Try adjusting the filters.',
       });
     }
   }
@@ -259,7 +259,7 @@ export class ArtifactExplorerView extends ItemView {
 
     header.createEl('span', {
       cls: 'docflow-explorer-group-name',
-      text: project || '(프로젝트 없음)',
+      text: project || '(No Project)',
     });
     header.createEl('span', {
       cls: 'docflow-explorer-group-count',
@@ -291,7 +291,7 @@ export class ArtifactExplorerView extends ItemView {
   private renderEntry(parent: HTMLElement, entry: ArtifactEntry): void {
     const item = parent.createEl('div', {
       cls: 'docflow-explorer-item',
-      attr: { role: 'button', tabindex: '0', 'aria-label': `${entry.title} 열기` },
+      attr: { role: 'button', tabindex: '0', 'aria-label': `Open ${entry.title}` },
     });
 
     const iconEl = item.createEl('span', { cls: 'docflow-explorer-item-icon' });

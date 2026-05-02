@@ -1,57 +1,57 @@
 ---
-title: {{회의 제목}}
+title: {{meeting title}}
 type: meeting
-project: {{프로젝트명}}
+project: {{project}}
 date: {{YYYY-MM-DD}}
-attendees: [{{참석자1}}, {{참석자2}}, {{참석자3}}]
+attendees: [{{attendee1}}, {{attendee2}}, {{attendee3}}]
 status: draft
-author: {{작성자}}
+author: {{author}}
 tags: [meeting]
 related: []
 ---
 
-## 회의 정보
+## Meeting Info
 
-| 항목 | 내용 |
-|------|------|
-| 일시 | {{YYYY-MM-DD HH:MM}} |
-| 장소 | {{장소 또는 화상회의 링크}} |
-| 참석자 | {{참석자 목록}} |
-| 작성자 | {{작성자}} |
+| Item | Details |
+|------|---------|
+| Date/Time | {{YYYY-MM-DD HH:MM}} |
+| Location | {{location or video link}} |
+| Attendees | {{attendee list}} |
+| Author | {{author}} |
 
-## 안건
+## Agenda
 
-1. {{안건 1}}
-2. {{안건 2}}
-3. {{안건 3}}
+1. {{agenda 1}}
+2. {{agenda 2}}
+3. {{agenda 3}}
 
-## 논의 내용
+## Discussion
 
-### 1. {{안건 1}}
+### 1. {{agenda 1}}
 
-{{논의 내용}}
+{{discussion}}
 
-**결정 사항:** {{결정된 내용}}
+**Decision:** {{decision}}
 
-### 2. {{안건 2}}
+### 2. {{agenda 2}}
 
-{{논의 내용}}
+{{discussion}}
 
-**결정 사항:** {{결정된 내용}}
+**Decision:** {{decision}}
 
-### 3. {{안건 3}}
+### 3. {{agenda 3}}
 
-{{논의 내용}}
+{{discussion}}
 
-**결정 사항:** {{결정된 내용}}
+**Decision:** {{decision}}
 
-## 액션 아이템
+## Action Items
 
-- [ ] {{담당자}}: {{할 일}} (~ {{기한}})
-- [ ] {{담당자}}: {{할 일}} (~ {{기한}})
-- [ ] {{담당자}}: {{할 일}} (~ {{기한}})
+- [ ] {{owner}}: {{task}} (~ {{due date}})
+- [ ] {{owner}}: {{task}} (~ {{due date}})
+- [ ] {{owner}}: {{task}} (~ {{due date}})
 
-## 다음 회의
+## Next Meeting
 
-- 일시: {{다음 회의 일정}}
-- 안건: {{다음 회의 예정 안건}}
+- Date/Time: {{next meeting date}}
+- Agenda: {{next meeting agenda}}

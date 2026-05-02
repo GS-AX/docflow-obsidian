@@ -1,19 +1,19 @@
 ---
-title: {{제목}} 시스템 아키텍처
+title: {{title}} Architecture
 type: architecture
-project: {{프로젝트명}}
+project: {{project}}
 version: 1.0.0
 status: draft
-author: {{작성자}}
+author: {{author}}
 tags: [architecture, infra]
 related: []
 ---
 
-## 개요
+## Overview
 
-{{아키텍처 설명}}
+{{architecture description}}
 
-## 다이어그램
+## Diagram
 
 ```mermaid
 flowchart TD
@@ -33,27 +33,27 @@ flowchart TD
   ServiceB --> DB2
 ```
 
-## 컴포넌트 설명
+## Components
 
-| 컴포넌트 | 역할 | 기술 스택 | 비고 |
-|---------|------|---------|------|
-| Client | 사용자 인터페이스 | React | |
-| API Gateway | 라우팅, 인증 | Kong / Nginx | |
-| Service A | {{역할}} | {{기술}} | |
-| Service B | {{역할}} | {{기술}} | |
-| Database A | {{역할}} | PostgreSQL | |
-| Redis Cache | 캐시 | Redis | |
+| Component | Role | Tech Stack | Notes |
+|-----------|------|------------|-------|
+| Client | User Interface | React | |
+| API Gateway | Routing, Auth | Kong / Nginx | |
+| Service A | {{role}} | {{tech}} | |
+| Service B | {{role}} | {{tech}} | |
+| Database A | {{role}} | PostgreSQL | |
+| Redis Cache | Cache | Redis | |
 
-## 인프라 구성
+## Infrastructure
 
-| 항목 | 개발 | 스테이징 | 운영 |
-|------|------|---------|------|
-| 서버 | Docker local | AWS ECS | AWS ECS |
+| Item | Dev | Staging | Prod |
+|------|-----|---------|------|
+| Server | Docker local | AWS ECS | AWS ECS |
 | DB | PostgreSQL (local) | RDS | RDS (Multi-AZ) |
 | CDN | - | - | CloudFront |
 
-## 변경 이력
+## Change History
 
-| 버전 | 날짜 | 변경 내용 | 작성자 |
-|------|------|---------|-------|
-| 1.0.0 | {{날짜}} | 최초 작성 | {{작성자}} |
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | {{date}} | Initial revision | {{author}} |
