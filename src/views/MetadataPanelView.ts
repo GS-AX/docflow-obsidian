@@ -1,33 +1,43 @@
 import { ItemView, TFile, WorkspaceLeaf, setIcon } from 'obsidian';
 import { ArtifactType, ArtifactStatus, ARTIFACT_TYPES } from '../types';
 import { getFrontmatter } from '../utils/frontmatter';
+import { t, tf } from '../i18n';
 
 // ── 상수 ───────────────────────────────────────────────────────────────────────
 
 export const METADATA_PANEL_VIEW_TYPE = 'docflow-metadata-panel';
 
-// ── 표시 메타 ──────────────────────────────────────────────────────────────────
+// ── 유형별 아이콘 ──────────────────────────────────────────────────────────────
 
-const TYPE_META: Record<ArtifactType, { label: string; icon: string }> = {
-  erd:          { label: 'ERD',          icon: 'table-2' },
-  api:          { label: 'API',          icon: 'zap' },
-  architecture: { label: 'Architecture', icon: 'share-2' },
-  wbs:          { label: 'WBS',          icon: 'calendar-range' },
-  requirements: { label: 'Requirements', icon: 'list-checks' },
-  manual:       { label: 'Manual',       icon: 'book-open' },
-  meeting:      { label: 'Meeting',      icon: 'users' },
+const TYPE_ICON: Record<ArtifactType, string> = {
+  erd:          'table-2',
+  api:          'zap',
+  architecture: 'share-2',
+  wbs:          'calendar-range',
+  requirements: 'list-checks',
+  manual:       'book-open',
+  meeting:      'users',
 };
 
-const STATUS_META: Record<ArtifactStatus, { label: string; mod: string }> = {
-  draft:      { label: 'Draft',       mod: 'draft' },
-  review:     { label: 'In Review',   mod: 'review' },
-  approved:   { label: 'Approved',    mod: 'approved' },
-  deprecated: { label: 'Deprecated',  mod: 'deprecated' },
+const TYPE_LABEL_KEY: Record<ArtifactType, Parameters<typeof t>[0]> = {
+  erd:          'typeERD',
+  api:          'typeAPI',
+  architecture: 'typeArchitecture',
+  wbs:          'typeWBS',
+  requirements: 'typeRequirements',
+  manual:       'typeManual',
+  meeting:      'typeMeeting',
+};
+
+const STATUS_BADGE_KEY: Record<ArtifactStatus, Parameters<typeof t>[0]> = {
+  draft:      'statusDraft',
+  review:     'statusReview',
+  approved:   'statusApproved',
+  deprecated: 'statusDeprecated',
 };
 
 // ── 위키링크 파싱 ──────────────────────────────────────────────────────────────
 
-/** "[[파일명|표시명]]" 또는 "[[파일명]]" → { path, display } */
 function parseWikiLink(raw: string): { path: string; display: string } | null {
   const m = raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
   if (!m) return null;
@@ -44,7 +54,7 @@ export class MetadataPanelView extends ItemView {
   }
 
   getViewType(): string  { return METADATA_PANEL_VIEW_TYPE; }
-  getDisplayText(): string { return 'DocFlow Metadata'; }
+  getDisplayText(): string { return t('metadataTitle'); }
   getIcon(): string { return 'info'; }
 
   // ── 생명주기 ──────────────────────────────────────────────────────────────────
@@ -63,6 +73,13 @@ export class MetadataPanelView extends ItemView {
 
   async onClose(): Promise<void> { /* registerEvent 로 등록한 이벤트는 Obsidian 이 자동 해제 */ }
 
+  // ── 공개 메서드 ───────────────────────────────────────────────────────────────
+
+  /** 언어 변경 등 외부 이벤트에 의해 강제 재렌더링할 때 사용한다. */
+  forceRefresh(): void {
+    this.render();
+  }
+
   // ── 파일 변경 감지 ─────────────────────────────────────────────────────────────
 
   private handleFileChange(): void {
@@ -80,13 +97,13 @@ export class MetadataPanelView extends ItemView {
     root.addClass('docflow-metadata-panel');
 
     if (!this.currentFile) {
-      this.renderEmpty(root, 'Open a file to\nview its metadata.');
+      this.renderEmpty(root, t('metaEmptyFile'));
       return;
     }
 
     const fm = getFrontmatter(this.currentFile, this.app);
     if (!fm.type || !ARTIFACT_TYPES.includes(fm.type as ArtifactType)) {
-      this.renderEmpty(root, 'Not a DocFlow artifact.\nAdd a type field to the frontmatter.');
+      this.renderEmpty(root, t('metaNotArtifact'));
       return;
     }
 
@@ -104,13 +121,13 @@ export class MetadataPanelView extends ItemView {
     const header = root.createEl('div', { cls: 'docflow-mp-header' });
 
     const iconEl = header.createEl('span', { cls: 'docflow-mp-type-icon' });
-    setIcon(iconEl, TYPE_META[type].icon);
+    setIcon(iconEl, TYPE_ICON[type]);
 
     const textWrap = header.createEl('div', { cls: 'docflow-mp-header-text' });
     textWrap.createEl('p', { cls: 'docflow-mp-title', text: title });
     textWrap.createEl('span', {
       cls: `docflow-mp-type-badge docflow-type--${type}`,
-      text: TYPE_META[type].label,
+      text: t(TYPE_LABEL_KEY[type]),
     });
   }
 
@@ -118,21 +135,15 @@ export class MetadataPanelView extends ItemView {
 
   private renderStatus(root: HTMLElement, status: ArtifactStatus): void {
     const section = root.createEl('div', { cls: 'docflow-mp-section docflow-mp-status-section' });
-    const meta = STATUS_META[status] ?? { label: status, mod: 'draft' };
     section.createEl('span', {
-      cls: `docflow-mp-status-badge docflow-mp-status--${meta.mod}`,
-      text: meta.label,
+      cls: `docflow-mp-status-badge docflow-mp-status--${status}`,
+      text: t(STATUS_BADGE_KEY[status] ?? 'statusDraft'),
     });
   }
 
   // ── 섹션: 정보 행 (버전 / 작성자 / 수정일) ──────────────────────────────────
 
-  private renderInfoRows(
-    root: HTMLElement,
-    version: string,
-    author: string,
-    mtime: number,
-  ): void {
+  private renderInfoRows(root: HTMLElement, version: string, author: string, mtime: number): void {
     const section = root.createEl('div', { cls: 'docflow-mp-section' });
     const table = section.createEl('table', { cls: 'docflow-mp-info-table' });
 
@@ -144,12 +155,12 @@ export class MetadataPanelView extends ItemView {
       tr.createEl('td', { cls: 'docflow-mp-info-value', text: value });
     };
 
-    addRow('Version', 'tag', version);
-    if (author) addRow('Author', 'user', author);
+    addRow(t('metaVersion'), 'tag', version);
+    if (author) addRow(t('metaAuthor'), 'user', author);
     addRow(
-      'Modified',
+      t('metaModified'),
       'clock',
-      new Date(mtime).toLocaleDateString('en-US', {
+      new Date(mtime).toLocaleDateString(t('metaDateLocale'), {
         year: 'numeric', month: '2-digit', day: '2-digit',
       }),
     );
@@ -159,7 +170,7 @@ export class MetadataPanelView extends ItemView {
 
   private renderTags(root: HTMLElement, tags: string[]): void {
     const section = root.createEl('div', { cls: 'docflow-mp-section' });
-    this.renderSectionTitle(section, 'tag', 'Tags');
+    this.renderSectionTitle(section, 'tag', t('metaTags'));
     const tagList = section.createEl('div', { cls: 'docflow-mp-tag-list' });
     for (const tag of tags) {
       tagList.createEl('span', { cls: 'docflow-mp-tag', text: tag.startsWith('#') ? tag : `#${tag}` });
@@ -170,7 +181,7 @@ export class MetadataPanelView extends ItemView {
 
   private renderRelated(root: HTMLElement, related: string[]): void {
     const section = root.createEl('div', { cls: 'docflow-mp-section' });
-    this.renderSectionTitle(section, 'link', 'Related');
+    this.renderSectionTitle(section, 'link', t('metaRelated'));
 
     for (const raw of related) {
       const parsed = parseWikiLink(raw);
@@ -179,7 +190,7 @@ export class MetadataPanelView extends ItemView {
 
       const link = section.createEl('div', {
         cls: 'docflow-mp-related-link',
-        attr: { role: 'button', tabindex: '0', 'aria-label': `Open ${displayText}` },
+        attr: { role: 'button', tabindex: '0', 'aria-label': tf('openLink', displayText) },
       });
 
       const linkIcon = link.createEl('span', { cls: 'docflow-mp-related-icon' });
@@ -188,9 +199,7 @@ export class MetadataPanelView extends ItemView {
 
       const openRelated = () => {
         const target = this.app.metadataCache.getFirstLinkpathDest(filePath, '');
-        if (target) {
-          void this.app.workspace.getLeaf(false).openFile(target);
-        }
+        if (target) void this.app.workspace.getLeaf(false).openFile(target);
       };
       link.addEventListener('click', openRelated);
       link.addEventListener('keydown', (e: KeyboardEvent) => {

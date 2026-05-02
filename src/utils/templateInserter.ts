@@ -1,43 +1,72 @@
 import { App, MarkdownView, Modal, Notice, Setting, setIcon } from 'obsidian';
 import { ArtifactType, ARTIFACT_TYPES } from '../types';
+import { t, tf, getCurrentLang } from '../i18n';
 
-// ── 템플릿 임포트 (esbuild loader: { '.md': 'text' }) ─────────────────────────
+// ── 영문 템플릿 임포트 ────────────────────────────────────────────────────────
 
-import erdTemplate          from '../../template/erd-template.md';
-import apiTemplate          from '../../template/api-template.md';
-import architectureTemplate from '../../template/architecture-template.md';
-import wbsTemplate          from '../../template/wbs-template.md';
-import requirementsTemplate from '../../template/requirements-template.md';
-import meetingTemplate      from '../../template/meeting-template.md';
-import manualTemplate       from '../../template/manual-template.md';
+import erdTemplateEn          from '../../template/en/erd-template.md';
+import apiTemplateEn          from '../../template/en/api-template.md';
+import architectureTemplateEn from '../../template/en/architecture-template.md';
+import wbsTemplateEn          from '../../template/en/wbs-template.md';
+import requirementsTemplateEn from '../../template/en/requirements-template.md';
+import meetingTemplateEn      from '../../template/en/meeting-template.md';
+import manualTemplateEn       from '../../template/en/manual-template.md';
 
-// ── 유형 표시 정보 ────────────────────────────────────────────────────────────
+// ── 한국어 템플릿 임포트 ──────────────────────────────────────────────────────
 
-const TYPE_META: Record<ArtifactType, { label: string; icon: string }> = {
-  erd:          { label: 'ERD',          icon: 'table-2' },
-  api:          { label: 'API',          icon: 'zap' },
-  architecture: { label: 'Architecture', icon: 'share-2' },
-  wbs:          { label: 'WBS',          icon: 'calendar-range' },
-  requirements: { label: 'Requirements', icon: 'list-checks' },
-  manual:       { label: 'Manual',       icon: 'book-open' },
-  meeting:      { label: 'Meeting',      icon: 'users' },
-};
+import erdTemplateKo          from '../../template/ko/erd-template.md';
+import apiTemplateKo          from '../../template/ko/api-template.md';
+import architectureTemplateKo from '../../template/ko/architecture-template.md';
+import wbsTemplateKo          from '../../template/ko/wbs-template.md';
+import requirementsTemplateKo from '../../template/ko/requirements-template.md';
+import meetingTemplateKo      from '../../template/ko/meeting-template.md';
+import manualTemplateKo       from '../../template/ko/manual-template.md';
 
 // ── 템플릿 맵 ─────────────────────────────────────────────────────────────────
 
-const TEMPLATE_MAP: Record<ArtifactType, string> = {
-  erd:          erdTemplate,
-  api:          apiTemplate,
-  architecture: architectureTemplate,
-  wbs:          wbsTemplate,
-  requirements: requirementsTemplate,
-  meeting:      meetingTemplate,
-  manual:       manualTemplate,
+const TEMPLATE_MAP: Record<'en' | 'ko', Record<ArtifactType, string>> = {
+  en: {
+    erd:          erdTemplateEn,
+    api:          apiTemplateEn,
+    architecture: architectureTemplateEn,
+    wbs:          wbsTemplateEn,
+    requirements: requirementsTemplateEn,
+    meeting:      meetingTemplateEn,
+    manual:       manualTemplateEn,
+  },
+  ko: {
+    erd:          erdTemplateKo,
+    api:          apiTemplateKo,
+    architecture: architectureTemplateKo,
+    wbs:          wbsTemplateKo,
+    requirements: requirementsTemplateKo,
+    meeting:      meetingTemplateKo,
+    manual:       manualTemplateKo,
+  },
+};
+
+const TYPE_ICON: Record<ArtifactType, string> = {
+  erd:          'table-2',
+  api:          'zap',
+  architecture: 'share-2',
+  wbs:          'calendar-range',
+  requirements: 'list-checks',
+  manual:       'book-open',
+  meeting:      'users',
+};
+
+const TYPE_LABEL_KEY: Record<ArtifactType, Parameters<typeof t>[0]> = {
+  erd:          'typeERD',
+  api:          'typeAPI',
+  architecture: 'typeArchitecture',
+  wbs:          'typeWBS',
+  requirements: 'typeRequirements',
+  manual:       'typeManual',
+  meeting:      'typeMeeting',
 };
 
 // ── 유틸리티 함수 ─────────────────────────────────────────────────────────────
 
-/** 콘텐츠에서 고유한 {{플레이스홀더}} 이름을 출현 순서대로 반환한다. */
 export function extractPlaceholders(content: string): string[] {
   const seen = new Set<string>();
   const result: string[] = [];
@@ -45,29 +74,18 @@ export function extractPlaceholders(content: string): string[] {
   let m: RegExpExecArray | null;
   while ((m = re.exec(content)) !== null) {
     const name = m[1].trim();
-    if (!seen.has(name)) {
-      seen.add(name);
-      result.push(name);
-    }
+    if (!seen.has(name)) { seen.add(name); result.push(name); }
   }
   return result;
 }
 
-/**
- * values 에 있는 항목만 치환한다.
- * 값이 빈 문자열이면 원래 {{...}} 를 그대로 유지해 사용자가 나중에 채울 수 있게 한다.
- */
-export function applyPlaceholders(
-  content: string,
-  values: Map<string, string>,
-): string {
+export function applyPlaceholders(content: string, values: Map<string, string>): string {
   return content.replace(/\{\{([^}]+)\}\}/g, (_match, name: string) => {
     const val = values.get(name.trim());
     return val ? val : `{{${name}}}`;
   });
 }
 
-/** frontmatter 블록(--- ... ---) 안의 플레이스홀더만 추출한다. */
 function extractFrontmatterPlaceholders(content: string): string[] {
   const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   return extractPlaceholders(fmMatch ? fmMatch[1] : content);
@@ -78,7 +96,7 @@ function extractFrontmatterPlaceholders(content: string): string[] {
 function insertIntoActiveEditor(app: App, content: string): void {
   const editor = app.workspace.getActiveViewOfType(MarkdownView)?.editor;
   if (!editor) {
-    new Notice('No active editor. Open a file first.');
+    new Notice(t('insertNoEditor'));
     return;
   }
   if (editor.getValue().trim() === '') {
@@ -87,7 +105,7 @@ function insertIntoActiveEditor(app: App, content: string): void {
   } else {
     editor.replaceSelection(content);
   }
-  new Notice('Template inserted.');
+  new Notice(t('insertSuccess'));
 }
 
 // ── 유형 선택 모달 ────────────────────────────────────────────────────────────
@@ -101,32 +119,24 @@ class TypeSelectModal extends Modal {
   }
 
   onOpen(): void {
-    this.titleEl.setText('Insert Artifact Template');
+    this.titleEl.setText(t('insertModalTitle'));
     const { contentEl } = this;
 
-    contentEl.createEl('p', {
-      cls: 'docflow-modal-desc',
-      text: 'Select the artifact type to insert.',
-    });
+    contentEl.createEl('p', { cls: 'docflow-modal-desc', text: t('insertModalDesc') });
 
     const grid = contentEl.createEl('div', { cls: 'docflow-type-grid' });
 
     for (const type of ARTIFACT_TYPES) {
       const btn = grid.createEl('button', { cls: 'docflow-type-btn' });
       const iconEl = btn.createEl('span', { cls: 'docflow-type-btn-icon' });
-      setIcon(iconEl, TYPE_META[type].icon);
-      btn.createEl('span', { cls: 'docflow-type-btn-label', text: TYPE_META[type].label });
+      setIcon(iconEl, TYPE_ICON[type]);
+      btn.createEl('span', { cls: 'docflow-type-btn-label', text: t(TYPE_LABEL_KEY[type]) });
 
-      btn.addEventListener('click', () => {
-        this.close();
-        this.onChoose(type);
-      });
+      btn.addEventListener('click', () => { this.close(); this.onChoose(type); });
     }
   }
 
-  onClose(): void {
-    this.contentEl.empty();
-  }
+  onClose(): void { this.contentEl.empty(); }
 }
 
 // ── 플레이스홀더 입력 폼 모달 ──────────────────────────────────────────────────
@@ -149,15 +159,14 @@ class PlaceholderFormModal extends Modal {
     this.placeholders = placeholders;
     this.onInsert     = onInsert;
 
-    // 날짜 필드 자동 채우기
     const today = new Date().toISOString().slice(0, 10);
     this.values = new Map(
-      placeholders.map(p => [p, (p === 'date' || p === 'YYYY-MM-DD') ? today : '']),
+      placeholders.map(p => [p, (p === t('insertDateField') || p === 'YYYY-MM-DD') ? today : '']),
     );
   }
 
   onOpen(): void {
-    this.titleEl.setText(`${TYPE_META[this.type].label} — Fill in Details`);
+    this.titleEl.setText(tf('insertFormTitle', t(TYPE_LABEL_KEY[this.type])));
     const { contentEl } = this;
 
     let firstInput: HTMLInputElement | null = null;
@@ -173,40 +182,30 @@ class PlaceholderFormModal extends Modal {
 
     const btnRow = contentEl.createEl('div', { cls: 'docflow-modal-btns' });
 
-    btnRow.createEl('button', { text: 'Cancel' })
+    btnRow.createEl('button', { text: t('insertCancel') })
       .addEventListener('click', () => this.close());
 
-    btnRow.createEl('button', { cls: 'mod-cta', text: 'Insert Template' })
+    btnRow.createEl('button', { cls: 'mod-cta', text: t('insertConfirm') })
       .addEventListener('click', () => this.submit());
 
-    // Enter 키로 제출
     contentEl.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.submit(); }
     });
 
-    // 첫 번째 필드에 포커스 (setTimeout: 모달 DOM 마운트 완료 후)
     window.setTimeout(() => firstInput?.focus(), 50);
   }
 
-  onClose(): void {
-    this.contentEl.empty();
-  }
+  onClose(): void { this.contentEl.empty(); }
 
-  private submit(): void {
-    this.close();
-    this.onInsert(this.values);
-  }
+  private submit(): void { this.close(); this.onInsert(this.values); }
 }
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-/**
- * main.ts 커맨드 콜백에서 호출한다.
- * 유형 선택 → 플레이스홀더 입력 → 에디터 삽입 순으로 진행한다.
- */
 export function openTemplateInserter(app: App): void {
   new TypeSelectModal(app, (type: ArtifactType) => {
-    const template     = TEMPLATE_MAP[type];
+    const lang     = getCurrentLang();
+    const template = TEMPLATE_MAP[lang][type];
     const placeholders = extractFrontmatterPlaceholders(template);
     new PlaceholderFormModal(app, type, template, placeholders, (values) => {
       insertIntoActiveEditor(app, applyPlaceholders(template, values));

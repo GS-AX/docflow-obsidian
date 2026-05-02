@@ -1,28 +1,39 @@
 import { ItemView, TFile, WorkspaceLeaf, setIcon } from 'obsidian';
 import { ArtifactType, ArtifactStatus, ARTIFACT_TYPES } from '../types';
 import { parseFrontmatter } from '../utils/frontmatter';
+import { t, tf } from '../i18n';
 
 // ── 상수 ───────────────────────────────────────────────────────────────────────
 
 export const ARTIFACT_EXPLORER_VIEW_TYPE = 'docflow-artifact-explorer';
 
-// ── 유형별 표시 정보 ───────────────────────────────────────────────────────────
+// ── 유형별 아이콘 ──────────────────────────────────────────────────────────────
 
-const TYPE_META: Record<ArtifactType, { label: string; icon: string }> = {
-  erd:          { label: 'ERD',          icon: 'table-2' },
-  api:          { label: 'API',          icon: 'zap' },
-  architecture: { label: 'Architecture', icon: 'share-2' },
-  wbs:          { label: 'WBS',          icon: 'calendar-range' },
-  requirements: { label: 'Requirements', icon: 'list-checks' },
-  manual:       { label: 'Manual',       icon: 'book-open' },
-  meeting:      { label: 'Meeting',      icon: 'users' },
+const TYPE_ICON: Record<ArtifactType, string> = {
+  erd:          'table-2',
+  api:          'zap',
+  architecture: 'share-2',
+  wbs:          'calendar-range',
+  requirements: 'list-checks',
+  manual:       'book-open',
+  meeting:      'users',
 };
 
-const STATUS_LABEL: Record<ArtifactStatus, string> = {
-  draft:      'Draft',
-  review:     'In Review',
-  approved:   'Approved',
-  deprecated: 'Deprecated',
+const TYPE_LABEL_KEY: Record<ArtifactType, Parameters<typeof t>[0]> = {
+  erd:          'typeERD',
+  api:          'typeAPI',
+  architecture: 'typeArchitecture',
+  wbs:          'typeWBS',
+  requirements: 'typeRequirements',
+  manual:       'typeManual',
+  meeting:      'typeMeeting',
+};
+
+const STATUS_LABEL_KEY: Record<ArtifactStatus, Parameters<typeof t>[0]> = {
+  draft:      'statusDraft',
+  review:     'statusReview',
+  approved:   'statusApproved',
+  deprecated: 'statusDeprecated',
 };
 
 // ── 내부 타입 ──────────────────────────────────────────────────────────────────
@@ -48,7 +59,7 @@ export class ArtifactExplorerView extends ItemView {
   }
 
   getViewType(): string { return ARTIFACT_EXPLORER_VIEW_TYPE; }
-  getDisplayText(): string { return 'DocFlow Explorer'; }
+  getDisplayText(): string { return t('explorerTitle'); }
   getIcon(): string { return 'layers'; }
 
   // ── 생명주기 ──────────────────────────────────────────────────────────────────
@@ -56,7 +67,6 @@ export class ArtifactExplorerView extends ItemView {
   async onOpen(): Promise<void> {
     await this.refresh();
 
-    // 파일/메타데이터 변경 → 자동 재스캔 (debounce 300ms)
     this.registerEvent(this.app.metadataCache.on('changed', () => this.scheduleRefresh()));
     this.registerEvent(this.app.vault.on('create',         () => this.scheduleRefresh()));
     this.registerEvent(this.app.vault.on('delete',         () => this.scheduleRefresh()));
@@ -64,12 +74,17 @@ export class ArtifactExplorerView extends ItemView {
   }
 
   async onClose(): Promise<void> {
-    // registerEvent 로 등록한 이벤트는 Obsidian 이 자동 해제
-    // debounce 타이머만 수동 정리
     if (this.refreshTimer !== null) {
       clearTimeout(this.refreshTimer);
       this.refreshTimer = null;
     }
+  }
+
+  // ── 공개 메서드 ───────────────────────────────────────────────────────────────
+
+  /** 언어 변경 등 외부 이벤트에 의해 강제 재렌더링할 때 사용한다. */
+  forceRefresh(): void {
+    void this.refresh();
   }
 
   // ── 데이터 ────────────────────────────────────────────────────────────────────
@@ -87,7 +102,6 @@ export class ArtifactExplorerView extends ItemView {
     this.render();
   }
 
-  /** Vault 전체를 순회해 frontmatter type 이 있는 파일만 수집한다. */
   private scanVault(): ArtifactEntry[] {
     const result: ArtifactEntry[] = [];
 
@@ -110,13 +124,11 @@ export class ArtifactExplorerView extends ItemView {
       });
     }
 
-    // project 기준 오름차순, 같은 project 내에서는 title 기준
-    // project 없는 항목(￿)은 맨 아래로
     return result.sort((a, b) => {
       const pa = a.project || '￿';
       const pb = b.project || '￿';
-      if (pa !== pb) return pa.localeCompare(pb, 'ko');
-      return a.title.localeCompare(b.title, 'ko');
+      if (pa !== pb) return pa.localeCompare(pb);
+      return a.title.localeCompare(b.title);
     });
   }
 
@@ -145,9 +157,9 @@ export class ArtifactExplorerView extends ItemView {
   private renderFilterBar(root: HTMLElement, totalCount: number): void {
     const bar = root.createEl('div', { cls: 'docflow-explorer-filters' });
 
-    // ── 유형 필터 ─────────────────────────────────────────────────────────────
+    // 유형 필터
     const typeRow = bar.createEl('div', { cls: 'docflow-explorer-filter-row' });
-    typeRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: 'Type' });
+    typeRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: t('filterType') });
     const typeGroup = typeRow.createEl('div', { cls: 'docflow-explorer-filter-group' });
 
     const mkTypeBtn = (value: ArtifactType | 'all', label: string) => {
@@ -156,18 +168,15 @@ export class ArtifactExplorerView extends ItemView {
         text: label,
         attr: { 'aria-pressed': String(this.typeFilter === value) },
       });
-      btn.addEventListener('click', () => {
-        this.typeFilter = value;
-        this.render();
-      });
+      btn.addEventListener('click', () => { this.typeFilter = value; this.render(); });
     };
 
-    mkTypeBtn('all', 'All');
-    for (const t of ARTIFACT_TYPES) mkTypeBtn(t, TYPE_META[t].label);
+    mkTypeBtn('all', t('filterAll'));
+    for (const type of ARTIFACT_TYPES) mkTypeBtn(type, t(TYPE_LABEL_KEY[type]));
 
-    // ── 상태 필터 ─────────────────────────────────────────────────────────────
+    // 상태 필터
     const statusRow = bar.createEl('div', { cls: 'docflow-explorer-filter-row' });
-    statusRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: 'Status' });
+    statusRow.createEl('span', { cls: 'docflow-explorer-filter-label', text: t('filterStatus') });
     const statusGroup = statusRow.createEl('div', { cls: 'docflow-explorer-filter-group' });
 
     const mkStatusBtn = (value: ArtifactStatus | 'all', label: string) => {
@@ -176,25 +185,22 @@ export class ArtifactExplorerView extends ItemView {
         text: label,
         attr: { 'aria-pressed': String(this.statusFilter === value) },
       });
-      btn.addEventListener('click', () => {
-        this.statusFilter = value;
-        this.render();
-      });
+      btn.addEventListener('click', () => { this.statusFilter = value; this.render(); });
     };
 
-    mkStatusBtn('all', 'All');
-    mkStatusBtn('approved',   STATUS_LABEL.approved);
-    mkStatusBtn('review',     STATUS_LABEL.review);
-    mkStatusBtn('draft',      STATUS_LABEL.draft);
-    mkStatusBtn('deprecated', STATUS_LABEL.deprecated);
+    mkStatusBtn('all',         t('filterAll'));
+    mkStatusBtn('approved',    t('statusApproved'));
+    mkStatusBtn('review',      t('statusReview'));
+    mkStatusBtn('draft',       t('statusDraft'));
+    mkStatusBtn('deprecated',  t('statusDeprecated'));
 
-    // ── 개수 + 새로고침 ────────────────────────────────────────────────────────
+    // 개수 + 새로고침
     const meta = bar.createEl('div', { cls: 'docflow-explorer-meta' });
-    meta.createEl('span', { cls: 'docflow-explorer-count', text: `${totalCount} items` });
+    meta.createEl('span', { cls: 'docflow-explorer-count', text: tf('countItems', String(totalCount)) });
 
     const refreshBtn = meta.createEl('button', {
       cls: 'docflow-explorer-refresh-btn',
-      attr: { 'aria-label': 'Refresh' },
+      attr: { 'aria-label': t('refreshLabel') },
     });
     setIcon(refreshBtn, 'refresh-cw');
     refreshBtn.addEventListener('click', () => void this.refresh());
@@ -210,7 +216,6 @@ export class ArtifactExplorerView extends ItemView {
       return;
     }
 
-    // project 기준 그룹핑 (Map 순서 = 삽입 순서 = 이미 정렬된 entries 순서)
     const groups = new Map<string, ArtifactEntry[]>();
     for (const entry of filtered) {
       const key = entry.project || '';
@@ -227,25 +232,17 @@ export class ArtifactExplorerView extends ItemView {
     const empty = listEl.createEl('div', { cls: 'docflow-explorer-empty' });
     const iconWrap = empty.createEl('div', { cls: 'docflow-explorer-empty-icon' });
     setIcon(iconWrap, 'inbox');
-    empty.createEl('p', { text: 'No artifacts found.' });
+    empty.createEl('p', { text: t('noArtifacts') });
     if (this.typeFilter !== 'all' || this.statusFilter !== 'all') {
-      empty.createEl('p', {
-        cls: 'docflow-explorer-empty-hint',
-        text: 'Try adjusting the filters.',
-      });
+      empty.createEl('p', { cls: 'docflow-explorer-empty-hint', text: t('adjustFilters') });
     }
   }
 
   // ── 그룹 ───────────────────────────────────────────────────────────────────────
 
-  private renderGroup(
-    listEl: HTMLElement,
-    project: string,
-    entries: ArtifactEntry[],
-  ): void {
+  private renderGroup(listEl: HTMLElement, project: string, entries: ArtifactEntry[]): void {
     const group = listEl.createEl('div', { cls: 'docflow-explorer-group' });
 
-    // 헤더 (클릭으로 접기/펼치기)
     const header = group.createEl('div', {
       cls: 'docflow-explorer-group-header',
       attr: { role: 'button', tabindex: '0', 'aria-expanded': 'true' },
@@ -257,14 +254,8 @@ export class ArtifactExplorerView extends ItemView {
     const folderIcon = header.createEl('span', { cls: 'docflow-explorer-group-folder' });
     setIcon(folderIcon, 'folder');
 
-    header.createEl('span', {
-      cls: 'docflow-explorer-group-name',
-      text: project || '(No Project)',
-    });
-    header.createEl('span', {
-      cls: 'docflow-explorer-group-count',
-      text: String(entries.length),
-    });
+    header.createEl('span', { cls: 'docflow-explorer-group-name', text: project || t('noProject') });
+    header.createEl('span', { cls: 'docflow-explorer-group-count', text: String(entries.length) });
 
     const body = group.createEl('div', { cls: 'docflow-explorer-group-body' });
 
@@ -282,7 +273,6 @@ export class ArtifactExplorerView extends ItemView {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
     });
 
-    // 항목
     for (const entry of entries) this.renderEntry(body, entry);
   }
 
@@ -291,11 +281,11 @@ export class ArtifactExplorerView extends ItemView {
   private renderEntry(parent: HTMLElement, entry: ArtifactEntry): void {
     const item = parent.createEl('div', {
       cls: 'docflow-explorer-item',
-      attr: { role: 'button', tabindex: '0', 'aria-label': `Open ${entry.title}` },
+      attr: { role: 'button', tabindex: '0', 'aria-label': tf('openItem', entry.title) },
     });
 
     const iconEl = item.createEl('span', { cls: 'docflow-explorer-item-icon' });
-    setIcon(iconEl, TYPE_META[entry.type]?.icon ?? 'file-text');
+    setIcon(iconEl, TYPE_ICON[entry.type] ?? 'file-text');
 
     const textEl = item.createEl('div', { cls: 'docflow-explorer-item-text' });
     textEl.createEl('span', { cls: 'docflow-explorer-item-title', text: entry.title });
@@ -303,11 +293,11 @@ export class ArtifactExplorerView extends ItemView {
     const badges = textEl.createEl('div', { cls: 'docflow-explorer-item-badges' });
     badges.createEl('span', {
       cls: `docflow-explorer-type-badge docflow-type--${entry.type}`,
-      text: TYPE_META[entry.type]?.label ?? entry.type,
+      text: t(TYPE_LABEL_KEY[entry.type]),
     });
     badges.createEl('span', {
       cls: `docflow-explorer-status-badge docflow-status--${entry.status}`,
-      text: STATUS_LABEL[entry.status] ?? entry.status,
+      text: t(STATUS_LABEL_KEY[entry.status]),
     });
 
     const openFile = () => void this.app.workspace.getLeaf(false).openFile(entry.file);

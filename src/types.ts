@@ -54,6 +54,8 @@ export interface DocFlowSettings {
   diagramTheme: 'auto' | 'light' | 'dark';
   /** 산출물 스캔 대상 경로 (빈 배열 = Vault 전체 스캔) */
   scanPaths: string[];
+  /** UI 언어: 'auto' 이면 브라우저/시스템 로케일을 따름 (기본 'auto') */
+  language: 'auto' | 'en' | 'ko';
 }
 
 export const DEFAULT_SETTINGS: DocFlowSettings = {
@@ -62,4 +64,5 @@ export const DEFAULT_SETTINGS: DocFlowSettings = {
   metadataPanelAutoOpen: true,
   diagramTheme: 'auto',
   scanPaths: [],
+  language: 'auto',
 };
