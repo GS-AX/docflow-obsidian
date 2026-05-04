@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { Plugin, sanitizeHTMLToDom } from 'obsidian';
 import mermaid from 'mermaid';
 import { ErdRenderer, syncMermaidTheme } from './ErdRenderer';
 import { ApiRenderer } from './ApiRenderer';
@@ -28,7 +28,7 @@ async function renderMermaidFallback(source: string, el: HTMLElement): Promise<v
   try {
     const { svg } = await mermaid.render(id, source);
     // mermaid strict 모드가 SVG를 자체 sanitize하므로 innerHTML 삽입이 안전하다.
-    el.createEl('div', { cls: 'docflow-mermaid-passthrough' }).innerHTML = svg; // nosec
+    el.createEl('div', { cls: 'docflow-mermaid-passthrough' }).appendChild(sanitizeHTMLToDom(svg));
   } catch {
     // mermaid 파싱 오류 시 원문 코드 블록으로 표시
     renderCodeFallback(source, 'mermaid', el);

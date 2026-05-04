@@ -1,4 +1,5 @@
 import mermaid from 'mermaid';
+import { sanitizeHTMLToDom } from 'obsidian';
 
 // ── Internal types ─────────────────────────────────────────────────────────────
 
@@ -130,7 +131,7 @@ function setupZoomDrag(
   let lastY = 0;
 
   const apply = () => {
-    viewport.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    viewport.setCssProps({ '--docflow-erd-transform': `translate(${tx}px, ${ty}px) scale(${scale})` });
   };
 
   // 스크롤 휠 줌 — passive: false 로 preventDefault 가능
@@ -150,7 +151,7 @@ function setupZoomDrag(
     dragging = true;
     lastX = e.clientX;
     lastY = e.clientY;
-    viewport.style.cursor = 'grabbing';
+    viewport.addClass('is-dragging');
   });
 
   viewport.addEventListener('pointermove', (e: PointerEvent) => {
@@ -164,7 +165,7 @@ function setupZoomDrag(
 
   viewport.addEventListener('pointerup', () => {
     dragging = false;
-    viewport.style.cursor = 'grab';
+    viewport.removeClass('is-dragging');
   });
 
   return {
@@ -176,7 +177,7 @@ function setupZoomDrag(
       scale = 1;
       tx = 0;
       ty = 0;
-      viewport.style.transform = '';
+      apply();
     },
   };
 }
@@ -296,13 +297,8 @@ export class ErdRenderer {
     try {
       const id = `docflow-erd-${(++renderIdCounter).toString(36)}`;
       const { svg } = await mermaid.render(id, source);
-      // mermaid 라이브러리가 자체 sanitize를 수행하므로 innerHTML 삽입이 안전하다.
-      viewport.innerHTML = svg; // nosec
+      viewport.appendChild(sanitizeHTMLToDom(svg));
       svgEl = viewport.querySelector<SVGSVGElement>('svg');
-      if (svgEl) {
-        svgEl.style.maxWidth = '100%';
-        svgEl.style.height = 'auto';
-      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       container.createEl('p', { cls: 'docflow-erd-error', text: `ERD 렌더링 실패: ${msg}` });
@@ -324,7 +320,7 @@ export class ErdRenderer {
       return path.replace(/\.[^.]+$/, '').split('/').pop() ?? 'erd';
     };
 
-    btnPng.addEventListener('click', () => { if (svgEl) downloadPng(svgEl, fileName()); });
+    btnPng.addEventListener('click', () => { if (svgEl) void downloadPng(svgEl, fileName()); });
     btnSvg.addEventListener('click', () => { if (svgEl) downloadSvg(svgEl, fileName()); });
 
     // ── 탭 전환 ───────────────────────────────────────────────────────────────

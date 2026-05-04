@@ -54,7 +54,7 @@ export class DocFlowSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Swagger Try it out')
+      .setName(t('settingSwaggerName'))
       .setDesc(t('settingSwaggerDesc'))
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.swaggerTryItOut)

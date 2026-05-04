@@ -19,7 +19,7 @@ function toStatus(value: unknown): ArtifactStatus {
 function toStringArray(value: unknown): string[] {
   if (Array.isArray(value)) {
     return value
-      .map((v) => (v != null ? String(v).trim() : ''))
+      .map((v) => (v != null && typeof v !== 'object' ? String(v).trim() : ''))
       .filter(Boolean);
   }
   if (value != null && value !== '') {
@@ -33,7 +33,7 @@ function toStringArray(value: unknown): string[] {
  * YAML 파서가 "1.0" 같은 값을 number로 해석할 수 있어 String() 변환을 거친다.
  */
 function toVersion(value: unknown): string {
-  if (value == null) return '1.0.0';
+  if (value == null || typeof value === 'object') return '1.0.0';
   const str = String(value).trim();
   return str || '1.0.0';
 }

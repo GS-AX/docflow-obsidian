@@ -1,7 +1,27 @@
 import esbuild from 'esbuild';
 import process from 'process';
+import { readFileSync, writeFileSync } from 'fs';
+import { createRequire } from 'module';
 
 const prod = process.argv[2] === 'production';
+const require = createRequire(import.meta.url);
+
+const SWAGGER_MARKER = '/* @@docflow-swagger-inject@@ */';
+
+const swaggerCssPlugin = {
+  name: 'swagger-css',
+  setup(build) {
+    build.onEnd(() => {
+      const swaggerCssPath = require.resolve('swagger-ui-dist/swagger-ui.css');
+      const swaggerCss = readFileSync(swaggerCssPath, 'utf8');
+      let styles = readFileSync('styles.css', 'utf8');
+      // Strip previously injected section so watch-mode rebuilds are idempotent
+      const markerIdx = styles.indexOf(SWAGGER_MARKER);
+      if (markerIdx >= 0) styles = styles.slice(0, markerIdx).trimEnd();
+      writeFileSync('styles.css', `${styles}\n${SWAGGER_MARKER}\n${swaggerCss}`);
+    });
+  },
+};
 
 const context = await esbuild.context({
   entryPoints: ['src/main.ts'],
@@ -32,9 +52,9 @@ const context = await esbuild.context({
   sourcemap: prod ? false : 'inline',
   treeShaking: true,
   outfile: 'main.js',
+  plugins: [swaggerCssPlugin],
   loader: {
-    '.css': 'text',  // swagger-ui-dist/swagger-ui.css → 문자열로 번들
-    '.md':  'text',  // template/*.md → 문자열로 번들
+    '.md': 'text',  // template/*.md → string for bundling
   },
 });
 

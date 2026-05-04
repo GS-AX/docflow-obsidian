@@ -88,7 +88,7 @@ export default class DocFlowPlugin extends Plugin {
 
   // ── 언로드 ────────────────────────────────────────────────────────────────────
 
-  async onunload(): Promise<void> {
+  onunload(): void {
     unloadRenderers();
 
     for (const leaf of this.app.workspace.getLeavesOfType(ARTIFACT_EXPLORER_VIEW_TYPE)) {
@@ -139,7 +139,7 @@ export default class DocFlowPlugin extends Plugin {
     try {
       const existing = this.app.workspace.getLeavesOfType(viewType);
       if (existing.length > 0) {
-        this.app.workspace.revealLeaf(existing[0]);
+        void this.app.workspace.revealLeaf(existing[0]);
         return;
       }
       const leaf = side === 'left'
@@ -147,7 +147,7 @@ export default class DocFlowPlugin extends Plugin {
         : this.app.workspace.getRightLeaf(false);
       if (!leaf) return;
       await leaf.setViewState({ type: viewType, active: true });
-      this.app.workspace.revealLeaf(leaf);
+      void this.app.workspace.revealLeaf(leaf);
     } catch (err) {
       console.error(`DocFlow: failed to activate view (${viewType})`, err);
     }

@@ -64,20 +64,22 @@ export class ArtifactExplorerView extends ItemView {
 
   // ── 생명주기 ──────────────────────────────────────────────────────────────────
 
-  async onOpen(): Promise<void> {
-    await this.refresh();
+  onOpen(): Promise<void> {
+    this.refresh();
 
     this.registerEvent(this.app.metadataCache.on('changed', () => this.scheduleRefresh()));
     this.registerEvent(this.app.vault.on('create',         () => this.scheduleRefresh()));
     this.registerEvent(this.app.vault.on('delete',         () => this.scheduleRefresh()));
     this.registerEvent(this.app.vault.on('rename',         () => this.scheduleRefresh()));
+    return Promise.resolve();
   }
 
-  async onClose(): Promise<void> {
+  onClose(): Promise<void> {
     if (this.refreshTimer !== null) {
       clearTimeout(this.refreshTimer);
       this.refreshTimer = null;
     }
+    return Promise.resolve();
   }
 
   // ── 공개 메서드 ───────────────────────────────────────────────────────────────
@@ -97,7 +99,7 @@ export class ArtifactExplorerView extends ItemView {
     }, 300);
   }
 
-  private async refresh(): Promise<void> {
+  private refresh(): void {
     this.entries = this.scanVault();
     this.render();
   }

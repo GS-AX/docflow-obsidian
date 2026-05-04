@@ -1,25 +1,7 @@
 import SwaggerUIBundle from 'swagger-ui-dist';
 import { load as parseYaml } from 'js-yaml';
-// esbuild `loader: { '.css': 'text' }` 로 CSS 를 문자열로 번들링 — esbuild.config.mjs 참조
-// @ts-ignore
-import swaggerCss from 'swagger-ui-dist/swagger-ui.css';
 
-// ── CSS 주입 (Obsidian 세션당 1회) ────────────────────────────────────────────
-
-const SWAGGER_STYLE_ID = 'docflow-swagger-css';
-
-function injectSwaggerCss(): void {
-  if (document.getElementById(SWAGGER_STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = SWAGGER_STYLE_ID;
-  // swaggerCss 는 esbuild 가 텍스트로 번들링한 CSS 문자열이다.
-  style.textContent = swaggerCss as unknown as string;
-  document.head.appendChild(style);
-}
-
-function removeSwaggerCss(): void {
-  document.getElementById(SWAGGER_STYLE_ID)?.remove();
-}
+// swagger-ui.css is appended to styles.css at build time via esbuild.config.mjs
 
 // ── OpenAPI 스펙 파싱 ─────────────────────────────────────────────────────────
 
@@ -79,8 +61,8 @@ function buildHeader(
   if (!tryItOut) {
     header.createEl('span', {
       cls: 'docflow-api-badge docflow-api-badge--try-off',
-      text: 'Try it out: OFF',
-      attr: { title: '플러그인 설정 → Swagger Try it out 에서 활성화할 수 있습니다.' },
+      text: 'Try it out: off',
+      attr: { title: '플러그인 설정 → Swagger try it out 에서 활성화할 수 있습니다.' },
     });
   }
 }
@@ -106,7 +88,6 @@ export class ApiRenderer {
    */
   render(source: string, el: HTMLElement, tryItOut: boolean): void {
     el.empty();
-    injectSwaggerCss();
 
     const container = el.createEl('div', { cls: 'docflow-api-container' });
 
@@ -141,11 +122,12 @@ export class ApiRenderer {
     const swaggerMount = container.createEl('div', { cls: 'docflow-api-swagger' });
 
     try {
-      // SwaggerUIBundle 타입 정의는 React 컴포넌트용이라 번들 함수 형태와 다르므로 any 캐스팅 사용
-      (SwaggerUIBundle as unknown as (opts: Record<string, unknown>) => unknown)({
+      type SwaggerBundle = ((opts: Record<string, unknown>) => unknown) & { presets: { apis: unknown } };
+      const Bundle = SwaggerUIBundle as unknown as SwaggerBundle;
+      Bundle({
         spec,
         domNode: swaggerMount,
-        presets: [(SwaggerUIBundle as any).presets.apis],
+        presets: [Bundle.presets.apis],
         layout: 'BaseLayout',
         tryItOutEnabled: tryItOut,
         // tryItOut 이 OFF 이면 실제 HTTP 요청 버튼 자체를 비활성화
@@ -172,6 +154,6 @@ export class ApiRenderer {
    * document.head 에 주입한 <style> 태그를 제거해 완전히 원복한다.
    */
   onunload(): void {
-    removeSwaggerCss();
+    // swagger CSS is in styles.css — no runtime cleanup needed
   }
 }

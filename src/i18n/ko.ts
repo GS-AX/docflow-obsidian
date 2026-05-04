@@ -61,6 +61,7 @@ export const ko: Translations = {
     'frontmatter에 type 필드가 없을 때 파일 내용과 경로를 분석해 산출물 유형을 자동으로 감지합니다. ' +
     '예: erDiagram 키워드가 있는 mermaid 블록 → ERD, /api/ 경로의 YAML 파일 → API 명세. ' +
     '성능 우선 환경이나 오탐이 발생할 때 꺼두세요.',
+  settingSwaggerName:         'Swagger try it out',
   settingSwaggerDesc:
     'API 명세 렌더러(Swagger UI)에서 실제 HTTP 요청을 전송하는 "Try it out" 버튼을 활성화합니다. ' +
     '기본값 OFF — CORS 제한이나 인증이 필요한 API에서는 요청이 실패할 수 있습니다.',

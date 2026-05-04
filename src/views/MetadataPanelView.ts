@@ -59,7 +59,7 @@ export class MetadataPanelView extends ItemView {
 
   // ── 생명주기 ──────────────────────────────────────────────────────────────────
 
-  async onOpen(): Promise<void> {
+  onOpen(): Promise<void> {
     this.registerEvent(
       this.app.workspace.on('active-leaf-change', () => this.handleFileChange()),
     );
@@ -69,9 +69,10 @@ export class MetadataPanelView extends ItemView {
       }),
     );
     this.handleFileChange();
+    return Promise.resolve();
   }
 
-  async onClose(): Promise<void> { /* registerEvent 로 등록한 이벤트는 Obsidian 이 자동 해제 */ }
+  onClose(): Promise<void> { return Promise.resolve(); }
 
   // ── 공개 메서드 ───────────────────────────────────────────────────────────────
 

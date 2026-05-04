@@ -26,7 +26,7 @@ function getTranslations(): Translations {
 
 /** 키에 해당하는 번역 문자열을 반환한다. */
 export function t(key: keyof Translations): string {
-  return getTranslations()[key] as string;
+  return getTranslations()[key];
 }
 
 /**

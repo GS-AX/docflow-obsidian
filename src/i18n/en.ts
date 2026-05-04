@@ -1,7 +1,7 @@
 export const en = {
   // ── View titles ────────────────────────────────────────────────────────────
-  explorerTitle:      'DocFlow Explorer',
-  metadataTitle:      'DocFlow Metadata',
+  explorerTitle:      'DocFlow explorer',
+  metadataTitle:      'DocFlow metadata',
 
   // ── Artifact type labels ───────────────────────────────────────────────────
   typeERD:            'ERD',
@@ -14,7 +14,7 @@ export const en = {
 
   // ── Status labels ──────────────────────────────────────────────────────────
   statusDraft:        'Draft',
-  statusReview:       'In Review',
+  statusReview:       'In review',
   statusApproved:     'Approved',
   statusDeprecated:   'Deprecated',
 
@@ -26,7 +26,7 @@ export const en = {
   refreshLabel:       'Refresh',
 
   // ── Explorer list ──────────────────────────────────────────────────────────
-  noProject:          '(No Project)',
+  noProject:          '(No project)',
   noArtifacts:        'No artifacts found.',
   adjustFilters:      'Try adjusting the filters.',
   openItem:           'Open {0}',
@@ -43,26 +43,27 @@ export const en = {
   metaDateLocale:     'en-US',
 
   // ── Template inserter ──────────────────────────────────────────────────────
-  insertModalTitle:   'Insert Artifact Template',
+  insertModalTitle:   'Insert artifact template',
   insertModalDesc:    'Select the artifact type to insert.',
-  insertFormTitle:    '{0} — Fill in Details',
+  insertFormTitle:    '{0} — Fill in details',
   insertCancel:       'Cancel',
-  insertConfirm:      'Insert Template',
+  insertConfirm:      'Insert template',
   insertNoEditor:     'No active editor. Open a file first.',
   insertSuccess:      'Template inserted.',
-  insertDateField:    'date',
+  insertDateField:    'Date',
 
   // ── Settings ───────────────────────────────────────────────────────────────
-  settingDetectionHeading:    'Detection & Rendering',
-  settingAutoDetectName:      'Auto Type Detection',
+  settingDetectionHeading:    'Detection & rendering',
+  settingAutoDetectName:      'Auto type detection',
   settingAutoDetectDesc:
     'When a file has no type field in its frontmatter, DocFlow analyzes the content and path to detect the artifact type automatically. ' +
     'Examples: a mermaid block with the erDiagram keyword → ERD; a YAML file under an /api/ path → API spec. ' +
     'Disable if you prefer to set types explicitly or if false positives occur.',
+  settingSwaggerName:         'Swagger try it out',
   settingSwaggerDesc:
     'Enables the "Try it out" button in the API spec renderer (Swagger UI), allowing live HTTP requests. ' +
     'Off by default — requests may fail for APIs that require authentication or have CORS restrictions.',
-  settingDiagramThemeName:    'Diagram Theme',
+  settingDiagramThemeName:    'Diagram theme',
   settingDiagramThemeDesc:
     'Color theme for ERD, WBS, and Architecture diagrams. ' +
     '"Auto" follows Obsidian\'s light/dark theme in real time.',
@@ -70,12 +71,12 @@ export const en = {
   settingDiagramLight:        'Light',
   settingDiagramDark:         'Dark',
   settingPanelHeading:        'Panel',
-  settingMetaPanelName:       'Auto-open Metadata Panel',
+  settingMetaPanelName:       'Auto-open metadata panel',
   settingMetaPanelDesc:
     'Automatically opens the metadata panel in the right sidebar when you enter Reading View for a DocFlow artifact file (a file with a type field in its frontmatter). ' +
     'The panel will not open a second time if it is already visible.',
   settingVaultHeading:        'Vault',
-  settingVaultScanName:       'Scan Paths',
+  settingVaultScanName:       'Scan paths',
   settingVaultScanDesc:
     'Comma-separated folder paths for the Explorer and auto-detection to scan. ' +
     'Leave empty to scan the entire vault. Example: docs, projects/alpha, team/backend',
@@ -89,18 +90,18 @@ export const en = {
   settingLanguageKo:          '한국어',
 
   // ── Commands & ribbon ─────────────────────────────────────────────────────
-  cmdInsertTemplate:      'Insert Artifact Template',
-  cmdOpenExplorer:        'Open Artifact Explorer',
-  cmdOpenMetadata:        'Open Metadata Panel',
-  ribbonTooltip:          'Open DocFlow Explorer',
-  langChangedNotice:      'DocFlow: Re-enable the plugin to update command names.',
+  cmdInsertTemplate:      'Insert artifact template',
+  cmdOpenExplorer:        'Open artifact explorer',
+  cmdOpenMetadata:        'Open metadata panel',
+  ribbonTooltip:          'Open DocFlow explorer',
+  langChangedNotice:      'DocFlow: re-enable the plugin to update command names.',
 
   // ── Main notices ───────────────────────────────────────────────────────────
   mainRendererFailed:
-    'DocFlow: Failed to initialize renderers. ' +
+    'DocFlow: failed to initialize renderers. ' +
     'Try re-enabling the plugin or restarting Obsidian.',
-  mainSettingsLoadFailed: 'DocFlow: Failed to load settings. Using defaults.',
-  mainSettingsSaveFailed: 'DocFlow: Failed to save settings.',
+  mainSettingsLoadFailed: 'DocFlow: failed to load settings. Using defaults.',
+  mainSettingsSaveFailed: 'DocFlow: failed to save settings.',
 };
 
 // Translations 타입: 키 구조는 en 과 동일하되, 값 타입은 string 으로 풀어둔다.
