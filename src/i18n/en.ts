@@ -26,7 +26,7 @@ export const en = {
   refreshLabel:       'Refresh',
 
   // ── Explorer list ──────────────────────────────────────────────────────────
-  noProject:          '(No project)',
+  noProject:          '(no project)',
   noArtifacts:        'No artifacts found.',
   adjustFilters:      'Try adjusting the filters.',
   openItem:           'Open {0}',

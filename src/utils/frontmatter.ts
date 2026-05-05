@@ -22,7 +22,7 @@ function toStringArray(value: unknown): string[] {
       .map((v) => (v != null && typeof v !== 'object' ? String(v).trim() : ''))
       .filter(Boolean);
   }
-  if (value != null && value !== '') {
+  if (value != null && value !== '' && typeof value !== 'object') {
     return [String(value).trim()];
   }
   return [];
@@ -33,9 +33,9 @@ function toStringArray(value: unknown): string[] {
  * YAML 파서가 "1.0" 같은 값을 number로 해석할 수 있어 String() 변환을 거친다.
  */
 function toVersion(value: unknown): string {
-  if (value == null || typeof value === 'object') return '1.0.0';
-  const str = String(value).trim();
-  return str || '1.0.0';
+  if (typeof value === 'string') return value.trim() || '1.0.0';
+  if (typeof value === 'number') return String(value) || '1.0.0';
+  return '1.0.0';
 }
 
 // ── 공개 API ──────────────────────────────────────────────────────────────────

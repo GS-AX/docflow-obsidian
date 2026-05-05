@@ -62,7 +62,6 @@ function buildHeader(
     header.createEl('span', {
       cls: 'docflow-api-badge docflow-api-badge--try-off',
       text: 'Try it out: off',
-      attr: { title: '플러그인 설정 → Swagger try it out 에서 활성화할 수 있습니다.' },
     });
   }
 }
