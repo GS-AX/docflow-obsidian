@@ -22,8 +22,9 @@ function toStringArray(value: unknown): string[] {
       .map((v) => (v != null && typeof v !== 'object' ? String(v).trim() : ''))
       .filter(Boolean);
   }
-  if (value != null && value !== '' && typeof value !== 'object') {
-    return [String(value).trim()];
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    const str = String(value).trim();
+    return str ? [str] : [];
   }
   return [];
 }
