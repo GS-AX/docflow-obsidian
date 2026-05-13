@@ -1,7 +1,8 @@
 import SwaggerUIBundle from 'swagger-ui-dist';
 import { parseYaml } from 'obsidian';
+import swaggerCss from 'swagger-css-text';
 
-// swagger-ui.css is appended to styles.css at build time via esbuild.config.mjs
+// swagger-ui.css is bundled as a string and injected at render time per-document.
 
 // ── OpenAPI 스펙 파싱 ─────────────────────────────────────────────────────────
 
@@ -66,6 +67,20 @@ function buildHeader(
   }
 }
 
+// ── Swagger CSS injection ─────────────────────────────────────────────────────
+
+const SWAGGER_CSS_ID = 'docflow-swagger-css';
+const injectedElements: HTMLStyleElement[] = [];
+
+function ensureSwaggerCss(doc: Document): void {
+  if (doc.getElementById(SWAGGER_CSS_ID)) return;
+  const style = doc.createElement('style');
+  style.id = SWAGGER_CSS_ID;
+  style.textContent = swaggerCss;
+  doc.head.appendChild(style);
+  injectedElements.push(style);
+}
+
 // ── ApiRenderer ───────────────────────────────────────────────────────────────
 
 export class ApiRenderer {
@@ -86,6 +101,7 @@ export class ApiRenderer {
    * @param tryItOut - 플러그인 설정에서 가져온 Try it out 활성 여부
    */
   render(source: string, el: HTMLElement, tryItOut: boolean): void {
+    ensureSwaggerCss(el.ownerDocument);
     el.empty();
 
     const container = el.createEl('div', { cls: 'docflow-api-container' });
@@ -153,6 +169,7 @@ export class ApiRenderer {
    * document.head 에 주입한 <style> 태그를 제거해 완전히 원복한다.
    */
   onunload(): void {
-    // swagger CSS is in styles.css — no runtime cleanup needed
+    for (const el of injectedElements) el.remove();
+    injectedElements.length = 0;
   }
 }

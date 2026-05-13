@@ -1,24 +1,29 @@
 import esbuild from 'esbuild';
 import process from 'process';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 
 const prod = process.argv[2] === 'production';
 const require = createRequire(import.meta.url);
 
-const SWAGGER_MARKER = '/* @@docflow-swagger-inject@@ */';
+// Virtual module that exports the swagger-ui CSS as a JS string.
+// ApiRenderer imports this and injects it at runtime — keeps styles.css clean.
+const SWAGGER_CSS_NS = 'swagger-css-virtual';
 
 const swaggerCssPlugin = {
   name: 'swagger-css',
   setup(build) {
-    build.onEnd(() => {
-      const swaggerCssPath = require.resolve('swagger-ui-dist/swagger-ui.css');
-      const swaggerCss = readFileSync(swaggerCssPath, 'utf8');
-      let styles = readFileSync('styles.css', 'utf8');
-      // Strip previously injected section so watch-mode rebuilds are idempotent
-      const markerIdx = styles.indexOf(SWAGGER_MARKER);
-      if (markerIdx >= 0) styles = styles.slice(0, markerIdx).trimEnd();
-      writeFileSync('styles.css', `${styles}\n${SWAGGER_MARKER}\n${swaggerCss}`);
+    build.onResolve({ filter: /^swagger-css-text$/ }, () => ({
+      path: 'swagger-css-text',
+      namespace: SWAGGER_CSS_NS,
+    }));
+    build.onLoad({ filter: /.*/, namespace: SWAGGER_CSS_NS }, () => {
+      const cssPath = require.resolve('swagger-ui-dist/swagger-ui.css');
+      const css = readFileSync(cssPath, 'utf8');
+      return {
+        contents: `export default ${JSON.stringify(css)};`,
+        loader: 'js',
+      };
     });
   },
 };
