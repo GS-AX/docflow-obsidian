@@ -23,7 +23,7 @@ let renderIdCounter = 0;
 // ── Mermaid init ───────────────────────────────────────────────────────────────
 
 export function syncMermaidTheme(): void {
-  const isDark = document.body.classList.contains('theme-dark');
+  const isDark = activeDocument.body.classList.contains('theme-dark');
   const theme: 'dark' | 'default' = isDark ? 'dark' : 'default';
   if (currentMermaidTheme === theme) return;
 
@@ -32,7 +32,7 @@ export function syncMermaidTheme(): void {
     theme,
     securityLevel: 'strict',
     fontFamily:
-      getComputedStyle(document.body).getPropertyValue('--font-text').trim() ||
+      getComputedStyle(activeDocument.body).getPropertyValue('--font-text').trim() ||
       'sans-serif',
   });
   currentMermaidTheme = theme;
@@ -75,7 +75,7 @@ function parseEntities(source: string): Entity[] {
 // ── Table view ─────────────────────────────────────────────────────────────────
 
 function buildTableView(entities: Entity[]): HTMLElement {
-  const wrap = document.createElement('div');
+  const wrap = activeDocument.createElement('div');
   wrap.className = 'docflow-erd-tables';
 
   if (entities.length === 0) {
@@ -93,7 +93,7 @@ function buildTableView(entities: Entity[]): HTMLElement {
     const table = section.createEl('table', { cls: 'docflow-entity-table' });
     const hRow = table.createTHead().insertRow();
     for (const label of ['컬럼', '타입', '제약']) {
-      const th = document.createElement('th');
+      const th = activeDocument.createElement('th');
       th.textContent = label;
       hRow.appendChild(th);
     }
@@ -185,12 +185,12 @@ function setupZoomDrag(
 // ── Export helpers ─────────────────────────────────────────────────────────────
 
 function triggerDownload(url: string, fileName: string): void {
-  const a = document.createElement('a');
+  const a = activeDocument.createElement('a');
   a.href = url;
   a.download = fileName;
-  document.body.appendChild(a);
+  activeDocument.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
+  activeDocument.body.removeChild(a);
 }
 
 function downloadSvg(svgEl: SVGSVGElement, fileName: string): void {
@@ -198,7 +198,7 @@ function downloadSvg(svgEl: SVGSVGElement, fileName: string): void {
   const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   triggerDownload(url, `${fileName}.svg`);
-  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
 async function downloadPng(svgEl: SVGSVGElement, fileName: string): Promise<void> {
@@ -219,12 +219,12 @@ async function downloadPng(svgEl: SVGSVGElement, fileName: string): Promise<void
   const w = (vb.width || img.naturalWidth) + pad * 2;
   const h = (vb.height || img.naturalHeight) + pad * 2;
 
-  const canvas = document.createElement('canvas');
+  const canvas = activeDocument.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext('2d')!;
   const bg =
-    getComputedStyle(document.body).getPropertyValue('--background-primary').trim() ||
+    getComputedStyle(activeDocument.body).getPropertyValue('--background-primary').trim() ||
     '#ffffff';
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
@@ -234,7 +234,7 @@ async function downloadPng(svgEl: SVGSVGElement, fileName: string): Promise<void
     if (!blob) return;
     const pngUrl = URL.createObjectURL(blob);
     triggerDownload(pngUrl, `${fileName}.png`);
-    setTimeout(() => URL.revokeObjectURL(pngUrl), 10_000);
+    window.setTimeout(() => URL.revokeObjectURL(pngUrl), 10_000);
   }, 'image/png');
 }
 

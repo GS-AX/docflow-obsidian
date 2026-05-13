@@ -78,8 +78,9 @@ export function registerRenderers(
         : '';
       const pathForDetection = settings.autoTypeDetection ? ctx.sourcePath : '';
 
+      const fm = ctx.frontmatter as Record<string, unknown> | undefined;
       const type = detectType(
-        ctx.frontmatter?.type as string | undefined,
+        typeof fm?.['type'] === 'string' ? fm['type'] : undefined,
         contentForDetection,
         pathForDetection,
       );
@@ -107,8 +108,9 @@ export function registerRenderers(
       const settings = getSettings();
 
       // frontmatter type 우선, 없으면 내용 기반 감지 (파일 경로의 /api/ 패턴 포함)
+      const fm = ctx.frontmatter as Record<string, unknown> | undefined;
       const type = detectType(
-        ctx.frontmatter?.type as string | undefined,
+        typeof fm?.['type'] === 'string' ? fm['type'] : undefined,
         settings.autoTypeDetection ? source : '',
         settings.autoTypeDetection ? ctx.sourcePath : '',
       );

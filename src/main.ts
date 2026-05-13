@@ -103,8 +103,9 @@ export default class DocFlowPlugin extends Plugin {
 
   async loadSettings(): Promise<void> {
     try {
-      const saved = await this.loadData();
-      this.settings = Object.assign({}, DEFAULT_SETTINGS, saved) as DocFlowSettings;
+      const raw: unknown = await this.loadData();
+      const saved = (typeof raw === 'object' && raw !== null ? raw : {}) as Partial<DocFlowSettings>;
+      this.settings = { ...DEFAULT_SETTINGS, ...saved };
     } catch (err) {
       console.error('DocFlow: failed to load settings', err);
       new Notice(t('mainSettingsLoadFailed'));

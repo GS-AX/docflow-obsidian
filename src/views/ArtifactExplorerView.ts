@@ -52,7 +52,7 @@ export class ArtifactExplorerView extends ItemView {
   private typeFilter: ArtifactType | 'all' = 'all';
   private statusFilter: ArtifactStatus | 'all' = 'all';
   private entries: ArtifactEntry[] = [];
-  private refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  private refreshTimer: number | null = null;
 
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
@@ -76,7 +76,7 @@ export class ArtifactExplorerView extends ItemView {
 
   onClose(): Promise<void> {
     if (this.refreshTimer !== null) {
-      clearTimeout(this.refreshTimer);
+      window.clearTimeout(this.refreshTimer);
       this.refreshTimer = null;
     }
     return Promise.resolve();
@@ -92,8 +92,8 @@ export class ArtifactExplorerView extends ItemView {
   // ── 데이터 ────────────────────────────────────────────────────────────────────
 
   private scheduleRefresh(): void {
-    if (this.refreshTimer !== null) clearTimeout(this.refreshTimer);
-    this.refreshTimer = setTimeout(() => {
+    if (this.refreshTimer !== null) window.clearTimeout(this.refreshTimer);
+    this.refreshTimer = window.setTimeout(() => {
       this.refreshTimer = null;
       void this.refresh();
     }, 300);

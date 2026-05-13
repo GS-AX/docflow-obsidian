@@ -1,5 +1,5 @@
 import SwaggerUIBundle from 'swagger-ui-dist';
-import { load as parseYaml } from 'js-yaml';
+import { parseYaml } from 'obsidian';
 
 // swagger-ui.css is appended to styles.css at build time via esbuild.config.mjs
 
@@ -9,14 +9,14 @@ function parseSpec(source: string): Record<string, unknown> {
   const trimmed = source.trim();
   if (trimmed.startsWith('{')) {
     // JSON 코드블록
-    const parsed = JSON.parse(trimmed);
+    const parsed: unknown = JSON.parse(trimmed);
     if (typeof parsed !== 'object' || parsed === null) {
       throw new Error('JSON 파싱 결과가 객체가 아닙니다.');
     }
     return parsed as Record<string, unknown>;
   }
   // YAML 코드블록 (YAML은 JSON의 상위 집합이므로 JSON도 처리됨)
-  const parsed = parseYaml(trimmed);
+  const parsed: unknown = parseYaml(trimmed);
   if (typeof parsed !== 'object' || parsed === null) {
     throw new Error('YAML 파싱 결과가 올바르지 않습니다.');
   }
