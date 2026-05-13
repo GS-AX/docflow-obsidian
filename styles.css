@@ -68,80 +68,271 @@
   cursor: help;
 }
 
-/* ── Swagger UI 마운트 영역 ────────────────────────────────────────────────── */
+/* ── API body / tag groups ────────────────────────────────────────────────── */
 
-.docflow-api-swagger {
+.docflow-api-body {
   overflow: auto;
   max-height: 80vh;
 }
 
-/* Swagger 자체 상단 로고 바 숨김 */
-.docflow-api-swagger .swagger-ui .topbar {
-  display: none;
+.docflow-api-empty {
+  padding: 16px 20px;
+  color: var(--text-faint);
+  font-style: italic;
+  margin: 0;
 }
 
-/* wrapper 패딩 & 최대 너비 해제 */
-.docflow-api-swagger .swagger-ui .wrapper {
-  padding: 0 12px;
-  max-width: 100%;
+.docflow-api-group {
+  border-bottom: 1px solid var(--background-modifier-border);
 }
 
-/* ── Obsidian 테마 색상 연동 ────────────────────────────────────────────────── */
-
-.docflow-api-swagger .swagger-ui {
-  color: var(--text-normal);
-  font-family: var(--font-text);
-}
-
-.docflow-api-swagger .swagger-ui .info .title {
-  color: var(--text-normal);
-}
-
-.docflow-api-swagger .swagger-ui .info li,
-.docflow-api-swagger .swagger-ui .info p,
-.docflow-api-swagger .swagger-ui .info a {
-  color: var(--text-muted);
-}
-
-/* opblock (각 엔드포인트 블록) */
-.docflow-api-swagger .swagger-ui .opblock .opblock-summary-description {
-  color: var(--text-muted);
-}
-
-/* 다크 테마 배경 보정 */
-.theme-dark .docflow-api-swagger .swagger-ui .model-box {
+.docflow-api-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
   background: var(--background-secondary);
 }
 
-.theme-dark .docflow-api-swagger .swagger-ui section.models {
-  border-color: var(--background-modifier-border);
+.docflow-api-group-header:hover {
+  background: var(--background-modifier-hover);
 }
 
-.theme-dark .docflow-api-swagger .swagger-ui section.models .model-container {
-  background: var(--background-secondary);
-}
-
-.theme-dark .docflow-api-swagger .swagger-ui .opblock-tag {
-  border-color: var(--background-modifier-border);
-}
-
-.theme-dark .docflow-api-swagger .swagger-ui table thead tr td,
-.theme-dark .docflow-api-swagger .swagger-ui table thead tr th {
+.docflow-api-group-chevron {
+  font-size: 10px;
+  width: 12px;
+  text-align: center;
   color: var(--text-muted);
-  border-color: var(--background-modifier-border);
 }
 
-.theme-dark .docflow-api-swagger .swagger-ui .parameter__name,
-.theme-dark .docflow-api-swagger .swagger-ui .parameter__type {
+.docflow-api-group-tag {
+  flex: 1;
+}
+
+.docflow-api-group-count {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  background: var(--background-modifier-border);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+/* ── Endpoint rows ───────────────────────────────────────────────────────── */
+
+.docflow-api-endpoint-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--background-modifier-border);
+  user-select: none;
+}
+
+.docflow-api-endpoint-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.docflow-api-endpoint-row.is-expanded {
+  background: var(--background-modifier-hover);
+}
+
+.docflow-api-method {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  min-width: 58px;
+  text-align: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.docflow-api-method--get    { background: var(--color-green, #22c55e); }
+.docflow-api-method--post   { background: var(--color-blue, #3b82f6); }
+.docflow-api-method--put    { background: var(--color-orange, #f97316); }
+.docflow-api-method--delete { background: var(--color-red, #ef4444); }
+.docflow-api-method--patch  { background: var(--color-purple, #a855f7); }
+.docflow-api-method--head,
+.docflow-api-method--options { background: var(--text-muted); }
+
+.docflow-api-path {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
   color: var(--text-normal);
 }
 
-.theme-dark .docflow-api-swagger .swagger-ui input,
-.theme-dark .docflow-api-swagger .swagger-ui textarea,
-.theme-dark .docflow-api-swagger .swagger-ui select {
+.docflow-api-op-summary {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docflow-api-deprecated {
+  font-size: var(--font-ui-smaller);
+  color: var(--color-orange, #f97316);
+  border: 1px solid var(--color-orange, #f97316);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Endpoint detail ─────────────────────────────────────────────────────── */
+
+.docflow-api-endpoint-detail {
+  padding: 12px 16px 16px 24px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+}
+
+.docflow-api-op-desc {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin: 0 0 10px;
+}
+
+.docflow-api-section-title {
+  font-size: var(--font-ui-small);
+  font-weight: 600;
+  color: var(--text-normal);
+  margin: 12px 0 6px;
+}
+
+.docflow-api-params-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-ui-small);
+}
+
+.docflow-api-params-table th {
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.docflow-api-params-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+  vertical-align: top;
+}
+
+.docflow-api-param-name {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+}
+
+.docflow-api-param-in {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.docflow-api-body-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: var(--font-ui-small);
+}
+
+.docflow-api-schema-hint {
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+}
+
+.docflow-api-status {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.docflow-api-status--ok     { background: var(--color-green, #22c55e); color: #ffffff; }
+.docflow-api-status--client { background: var(--color-orange, #f97316); color: #ffffff; }
+.docflow-api-status--server { background: var(--color-red, #ef4444); color: #ffffff; }
+
+/* ── Try it out ──────────────────────────────────────────────────────────── */
+
+.docflow-api-try {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.docflow-api-try-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.docflow-api-try-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.docflow-api-try-label {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.docflow-api-try-input {
+  flex: 1;
+  font-size: var(--font-ui-small);
+}
+
+.docflow-api-try-body {
+  flex: 1;
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  min-height: 80px;
+  resize: vertical;
+}
+
+.docflow-api-try-exec {
+  margin-top: 4px;
+}
+
+.docflow-api-try-result {
+  margin-top: 10px;
+}
+
+.docflow-api-try-pending {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.docflow-api-try-error {
+  color: var(--text-error);
+  margin: 0;
+}
+
+.docflow-api-try-response {
   background: var(--background-secondary);
-  color: var(--text-normal);
-  border-color: var(--background-modifier-border);
+  padding: 10px 12px;
+  border-radius: var(--radius-s, 4px);
+  font-size: var(--font-ui-smaller);
+  font-family: var(--font-monospace);
+  overflow: auto;
+  max-height: 300px;
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 /* ── 에러 상태 ───────────────────────────────────────────────────────────── */

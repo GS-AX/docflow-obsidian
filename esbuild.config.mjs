@@ -1,32 +1,7 @@
 import esbuild from 'esbuild';
 import process from 'process';
-import { readFileSync } from 'fs';
-import { createRequire } from 'module';
 
 const prod = process.argv[2] === 'production';
-const require = createRequire(import.meta.url);
-
-// Virtual module that exports the swagger-ui CSS as a JS string.
-// ApiRenderer imports this and injects it at runtime — keeps styles.css clean.
-const SWAGGER_CSS_NS = 'swagger-css-virtual';
-
-const swaggerCssPlugin = {
-  name: 'swagger-css',
-  setup(build) {
-    build.onResolve({ filter: /^swagger-css-text$/ }, () => ({
-      path: 'swagger-css-text',
-      namespace: SWAGGER_CSS_NS,
-    }));
-    build.onLoad({ filter: /.*/, namespace: SWAGGER_CSS_NS }, () => {
-      const cssPath = require.resolve('swagger-ui-dist/swagger-ui.css');
-      const css = readFileSync(cssPath, 'utf8');
-      return {
-        contents: `export default ${JSON.stringify(css)};`,
-        loader: 'js',
-      };
-    });
-  },
-};
 
 const context = await esbuild.context({
   entryPoints: ['src/main.ts'],
@@ -57,7 +32,6 @@ const context = await esbuild.context({
   sourcemap: prod ? false : 'inline',
   treeShaking: true,
   outfile: 'main.js',
-  plugins: [swaggerCssPlugin],
   loader: {
     '.md': 'text',  // template/*.md → string for bundling
   },
