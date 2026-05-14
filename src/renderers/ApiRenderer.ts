@@ -113,11 +113,11 @@ function renderParams(el: HTMLElement, params: OasParam[]): void {
 }
 
 function schemaToText(schema: unknown, depth = 0): string {
-  if (!schema || typeof schema !== 'object') return String(schema ?? '');
+  if (!schema || typeof schema !== 'object') return schema == null ? '' : String(schema);
   const s = schema as Record<string, unknown>;
   if (typeof s['$ref'] === 'string') return s['$ref'].split('/').pop() ?? '';
   if (s['type'] === 'array' && s['items']) return `${schemaToText(s['items'], depth)}[]`;
-  if (s['type']) return String(s['type']);
+  if (typeof s['type'] === 'string') return s['type'];
   if (s['properties'] && depth < 2) {
     const props = Object.entries(s['properties'] as Record<string, unknown>)
       .map(([k, v]) => `${k}: ${schemaToText(v, depth + 1)}`)
@@ -285,13 +285,12 @@ function renderEndpoint(
     row.createEl('span', { cls: 'docflow-api-deprecated', text: 'deprecated' });
   }
 
-  const detail = wrap.createEl('div', { cls: 'docflow-api-endpoint-detail' });
-  detail.style.display = 'none';
+  const detail = wrap.createEl('div', { cls: 'docflow-api-endpoint-detail docflow-api-hidden' });
 
   let expanded = false;
   const toggle = () => {
     expanded = !expanded;
-    detail.style.display = expanded ? '' : 'none';
+    detail.toggleClass('docflow-api-hidden', !expanded);
     row.classList.toggle('is-expanded', expanded);
     if (expanded && detail.childElementCount === 0) renderEndpointDetail(detail, entry, servers, tryItOut);
   };
@@ -341,13 +340,12 @@ function renderTagGroup(
   header.createEl('span', { cls: 'docflow-api-group-tag', text: tag });
   header.createEl('span', { cls: 'docflow-api-group-count', text: String(endpoints.length) });
 
-  const body = group.createEl('div', { cls: 'docflow-api-group-body' });
-  body.style.display = 'none';
+  const body = group.createEl('div', { cls: 'docflow-api-group-body docflow-api-hidden' });
 
   let open = false;
   const toggle = () => {
     open = !open;
-    body.style.display = open ? '' : 'none';
+    body.toggleClass('docflow-api-hidden', !open);
     header.classList.toggle('is-open', open);
     header.querySelector('.docflow-api-group-chevron')!.textContent = open ? '▼' : '▶';
   };

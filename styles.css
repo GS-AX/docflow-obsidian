@@ -68,6 +68,12 @@
   cursor: help;
 }
 
+/* ── Visibility utility ───────────────────────────────────────────────────── */
+
+.docflow-api-hidden {
+  display: none;
+}
+
 /* ── API body / tag groups ────────────────────────────────────────────────── */
 
 .docflow-api-body {
