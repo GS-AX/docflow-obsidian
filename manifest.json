@@ -1,7 +1,7 @@
 {
   "id": "docflow",
   "name": "DocFlow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minAppVersion": "1.7.2",
   "description": "Render IT project artifacts — ERD, API specs, WBS, architecture diagrams, requirements, manuals, and meeting notes — with purpose-built type-aware views.",
   "author": "HJ",

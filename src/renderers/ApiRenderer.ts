@@ -113,7 +113,8 @@ function renderParams(el: HTMLElement, params: OasParam[]): void {
 }
 
 function schemaToText(schema: unknown, depth = 0): string {
-  if (!schema || typeof schema !== 'object') return typeof schema === 'string' ? schema : '';
+  if (typeof schema === 'string') return schema;
+  if (!schema || typeof schema !== 'object') return '';
   const s = schema as Record<string, unknown>;
   if (typeof s['$ref'] === 'string') return s['$ref'].split('/').pop() ?? '';
   if (s['type'] === 'array' && s['items']) return `${schemaToText(s['items'], depth)}[]`;
