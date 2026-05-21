@@ -1,6 +1,6 @@
 {
   "name": "docflow",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "IT artifact renderer for Obsidian",
   "main": "main.js",
   "scripts": {
