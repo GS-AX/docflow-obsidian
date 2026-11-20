@@ -1,4 +1,4 @@
-import { ItemView, TFile, WorkspaceLeaf, setIcon } from 'obsidian';
+import { ItemView, Platform, TFile, WorkspaceLeaf, setIcon } from 'obsidian';
 import { ArtifactType, ArtifactStatus, ARTIFACT_TYPES } from '../types';
 import { parseFrontmatter } from '../utils/frontmatter';
 import { t, tf } from '../i18n';
@@ -302,7 +302,11 @@ export class ArtifactExplorerView extends ItemView {
       text: t(STATUS_LABEL_KEY[entry.status]),
     });
 
-    const openFile = () => void this.app.workspace.getLeaf(false).openFile(entry.file);
+    const openFile = () => {
+      void this.app.workspace.getLeaf(false).openFile(entry.file);
+      // 모바일: 파일을 연 뒤 좌측 드로어를 닫아 문서가 바로 보이게 한다.
+      if (Platform.isMobile) this.app.workspace.leftSplit.collapse();
+    };
     item.addEventListener('click', openFile);
     item.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFile(); }

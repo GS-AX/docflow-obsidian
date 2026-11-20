@@ -1,4 +1,4 @@
-import { MarkdownView, Notice, Plugin, WorkspaceLeaf } from 'obsidian';
+import { MarkdownView, Notice, Platform, Plugin, WorkspaceLeaf } from 'obsidian';
 import { DocFlowSettings, DEFAULT_SETTINGS } from './types';
 import { registerRenderers, unloadRenderers } from './renderers';
 import {
@@ -74,7 +74,8 @@ export default class DocFlowPlugin extends Plugin {
     // 8. 메타데이터 패널 자동 열기
     this.registerEvent(
       this.app.workspace.on('active-leaf-change', (leaf) => {
-        if (this.settings.metadataPanelAutoOpen) {
+        // 모바일에서는 revealLeaf 가 사이드 드로어를 강제로 펼치므로 자동 열기를 건너뛴다.
+        if (this.settings.metadataPanelAutoOpen && !Platform.isMobile) {
           this.maybeAutoOpenMetadataPanel(leaf);
         }
       }),
@@ -156,6 +157,8 @@ export default class DocFlowPlugin extends Plugin {
 
   private async initViews(): Promise<void> {
     try {
+      // 모바일: 시작 시 드로어가 열리지 않도록 뷰를 자동 생성하지 않는다 (리본/커맨드로 열기).
+      if (Platform.isMobile) return;
       if (this.app.workspace.getLeavesOfType(ARTIFACT_EXPLORER_VIEW_TYPE).length === 0) {
         await this.activateView(ARTIFACT_EXPLORER_VIEW_TYPE, 'left');
       }

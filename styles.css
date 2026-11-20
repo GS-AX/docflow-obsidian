@@ -448,6 +448,7 @@
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: none; /* 터치 드래그·핀치를 브라우저 스크롤/줌이 가로채지 않도록 */
 }
 
 .docflow-erd-viewport:active,
@@ -1187,4 +1188,93 @@
   margin-top: 20px;
   padding-top: 14px;
   border-top: 1px solid var(--background-modifier-border);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DocFlow — 모바일 / 터치 대응
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 터치 기기: 호버 고정(sticky hover) 방지 */
+@media (hover: none) {
+  .docflow-api-group-header:hover,
+  .docflow-api-endpoint-row:hover,
+  .docflow-erd-tab:hover,
+  .docflow-erd-action-btn:hover,
+  .docflow-explorer-filter-btn:hover,
+  .docflow-explorer-refresh-btn:hover,
+  .docflow-explorer-group-header:hover,
+  .docflow-explorer-item:hover,
+  .docflow-mp-related-link:hover {
+    background: transparent;
+  }
+  .docflow-api-endpoint-row.is-expanded:hover { background: var(--background-modifier-hover); }
+  .docflow-entity-table tbody tr:hover td { background: transparent; }
+  .docflow-type-btn:hover {
+    background: var(--background-secondary);
+    border-color: var(--background-modifier-border);
+    color: var(--text-normal);
+  }
+  .docflow-type-btn:hover .docflow-type-btn-icon { color: var(--text-muted); }
+  .docflow-erd-tab.is-active:hover,
+  .docflow-explorer-filter-btn.is-active:hover {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+  }
+}
+
+/* 터치 타깃 확대 */
+.is-mobile .docflow-erd-tab-bar { padding: 6px 8px; }
+.is-mobile .docflow-erd-tab,
+.is-mobile .docflow-erd-action-btn,
+.is-mobile .docflow-explorer-filter-btn,
+.is-mobile .docflow-explorer-refresh-btn,
+.is-mobile .docflow-type-btn {
+  min-height: 40px;
+}
+.is-mobile .docflow-erd-tab { padding: 6px 14px; }
+.is-mobile .docflow-erd-action-btn { padding: 6px 12px; min-width: 40px; }
+.is-mobile .docflow-explorer-filter-btn { padding: 6px 12px; }
+.is-mobile .docflow-explorer-refresh-btn { min-width: 40px; }
+
+.is-mobile .docflow-api-group-header,
+.is-mobile .docflow-api-endpoint-row,
+.is-mobile .docflow-explorer-group-header,
+.is-mobile .docflow-explorer-item,
+.is-mobile .docflow-mp-related-link {
+  min-height: 44px;
+  align-items: center;
+}
+
+/* 다이어그램 / 테이블 */
+.is-mobile .docflow-erd-diagram-view { min-height: 260px; }
+.is-mobile .docflow-erd-table-view { padding: 12px; }
+.is-mobile .docflow-entity { overflow-x: auto; }
+.is-mobile .docflow-api-endpoint-detail { overflow-x: auto; }
+
+/* iOS: 입력창 포커스 시 자동 확대 방지 */
+.is-mobile .docflow-api-try-input,
+.is-mobile .docflow-api-try-body {
+  font-size: 16px;
+}
+
+/* 좁은 화면 레이아웃 */
+@media (max-width: 600px) {
+  .docflow-api-endpoint-row { flex-wrap: wrap; row-gap: 2px; }
+  .docflow-api-op-summary { flex-basis: 100%; white-space: normal; }
+  .docflow-api-endpoint-detail { padding: 10px 12px 14px; }
+  .docflow-api-badge--try-off { margin-left: 0; }
+
+  .docflow-api-try-row { flex-direction: column; align-items: stretch; gap: 3px; }
+  .docflow-api-try-label { min-width: 0; }
+
+  .docflow-api-params-table { display: block; overflow-x: auto; }
+
+  .docflow-type-grid { grid-template-columns: repeat(2, 1fr); }
+  .docflow-type-btn-label { white-space: normal; }
+
+  .docflow-modal-btns { flex-wrap: wrap; }
+}
+
+@media (max-width: 380px) {
+  .docflow-type-grid { grid-template-columns: 1fr; }
 }

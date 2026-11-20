@@ -87,7 +87,7 @@ export function registerRenderers(
 
       switch (type) {
         case 'erd':
-          await erdRenderer.render(source, el);
+          await erdRenderer.render(source, el, plugin.app);
           break;
 
         // Phase 2 렌더러 — 구현 완료 후 case 추가

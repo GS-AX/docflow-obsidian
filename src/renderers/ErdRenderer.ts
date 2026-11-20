@@ -1,5 +1,5 @@
 import mermaid from 'mermaid';
-import { sanitizeHTMLToDom } from 'obsidian';
+import { App, Notice, Platform, sanitizeHTMLToDom } from 'obsidian';
 
 // ── Internal types ─────────────────────────────────────────────────────────────
 
@@ -117,7 +117,7 @@ function buildTableView(entities: Entity[]): HTMLElement {
   return wrap;
 }
 
-// ── Zoom & drag (pointer capture — document-level 리스너 불필요) ──────────────
+// ── Zoom & drag (pointer events — 마우스 / 터치 / 핀치 공용) ───────────────────
 
 function setupZoomDrag(
   viewport: HTMLElement,
@@ -126,51 +126,82 @@ function setupZoomDrag(
   let scale = 1;
   let tx = 0;
   let ty = 0;
-  let dragging = false;
-  let lastX = 0;
-  let lastY = 0;
+
+  const pointers = new Map<number, { x: number; y: number }>();
+  let pinchDist = 0;
+  let pinchMidX = 0;
+  let pinchMidY = 0;
+
+  const clamp = (v: number) => Math.min(Math.max(v, 0.2), 6);
 
   const apply = () => {
     viewport.setCssProps({ '--docflow-erd-transform': `translate(${tx}px, ${ty}px) scale(${scale})` });
   };
 
-  // 스크롤 휠 줌 — passive: false 로 preventDefault 가능
+  const pinchState = () => {
+    const [a, b] = [...pointers.values()];
+    return {
+      dist: Math.hypot(a.x - b.x, a.y - b.y),
+      midX: (a.x + b.x) / 2,
+      midY: (a.y + b.y) / 2,
+    };
+  };
+
+  // 스크롤 휠 줌 (데스크톱) — passive: false 로 preventDefault 가능
   diagramView.addEventListener(
     'wheel',
     (e: WheelEvent) => {
       e.preventDefault();
-      scale = Math.min(Math.max(scale * (e.deltaY < 0 ? 1.1 : 0.9), 0.2), 6);
+      scale = clamp(scale * (e.deltaY < 0 ? 1.1 : 0.9));
       apply();
     },
     { passive: false },
   );
 
-  // 드래그 — setPointerCapture 로 document 이벤트 등록 없이 처리
   viewport.addEventListener('pointerdown', (e: PointerEvent) => {
     viewport.setPointerCapture(e.pointerId);
-    dragging = true;
-    lastX = e.clientX;
-    lastY = e.clientY;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2) {
+      const st = pinchState();
+      pinchDist = st.dist;
+      pinchMidX = st.midX;
+      pinchMidY = st.midY;
+    }
     viewport.addClass('is-dragging');
   });
 
   viewport.addEventListener('pointermove', (e: PointerEvent) => {
-    if (!dragging) return;
-    tx += e.clientX - lastX;
-    ty += e.clientY - lastY;
-    lastX = e.clientX;
-    lastY = e.clientY;
+    const prev = pointers.get(e.pointerId);
+    if (!prev) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointers.size >= 2) {
+      // 두 손가락: 핀치 줌 + 중점 이동(패닝)
+      const st = pinchState();
+      if (pinchDist > 0) scale = clamp(scale * (st.dist / pinchDist));
+      tx += st.midX - pinchMidX;
+      ty += st.midY - pinchMidY;
+      pinchDist = st.dist;
+      pinchMidX = st.midX;
+      pinchMidY = st.midY;
+    } else {
+      tx += e.clientX - prev.x;
+      ty += e.clientY - prev.y;
+    }
     apply();
   });
 
-  viewport.addEventListener('pointerup', () => {
-    dragging = false;
-    viewport.removeClass('is-dragging');
-  });
+  const release = (e: PointerEvent) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinchDist = 0;
+    if (pointers.size === 0) viewport.removeClass('is-dragging');
+  };
+  viewport.addEventListener('pointerup', release);
+  viewport.addEventListener('pointercancel', release);
 
   return {
     zoomBy: (factor: number) => {
-      scale = Math.min(Math.max(scale * factor, 0.2), 6);
+      scale = clamp(scale * factor);
       apply();
     },
     reset: () => {
@@ -183,6 +214,9 @@ function setupZoomDrag(
 }
 
 // ── Export helpers ─────────────────────────────────────────────────────────────
+//
+// 데스크톱: <a download> 로 브라우저 다운로드.
+// 모바일: <a download> 가 동작하지 않으므로 볼트(첨부 파일 위치)에 파일로 저장한다.
 
 function triggerDownload(url: string, fileName: string): void {
   const a = activeDocument.createElement('a');
@@ -193,15 +227,30 @@ function triggerDownload(url: string, fileName: string): void {
   activeDocument.body.removeChild(a);
 }
 
-function downloadSvg(svgEl: SVGSVGElement, fileName: string): void {
-  const data = new XMLSerializer().serializeToString(svgEl);
-  const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+async function deliverBlob(app: App | undefined, blob: Blob, fileName: string): Promise<void> {
+  if (Platform.isMobile && app) {
+    try {
+      const path = await app.fileManager.getAvailablePathForAttachment(fileName);
+      await app.vault.createBinary(path, await blob.arrayBuffer());
+      new Notice('저장됨: ' + path);
+    } catch (err) {
+      console.error('DocFlow: export failed', err);
+      new Notice('파일 저장에 실패했습니다.');
+    }
+    return;
+  }
   const url = URL.createObjectURL(blob);
-  triggerDownload(url, `${fileName}.svg`);
+  triggerDownload(url, fileName);
   window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
-async function downloadPng(svgEl: SVGSVGElement, fileName: string): Promise<void> {
+async function downloadSvg(app: App | undefined, svgEl: SVGSVGElement, fileName: string): Promise<void> {
+  const data = new XMLSerializer().serializeToString(svgEl);
+  const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+  await deliverBlob(app, blob, fileName + '.svg');
+}
+
+async function downloadPng(app: App | undefined, svgEl: SVGSVGElement, fileName: string): Promise<void> {
   const data = new XMLSerializer().serializeToString(svgEl);
   const svgBlob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
   const svgUrl = URL.createObjectURL(svgBlob);
@@ -230,12 +279,9 @@ async function downloadPng(svgEl: SVGSVGElement, fileName: string): Promise<void
   ctx.fillRect(0, 0, w, h);
   ctx.drawImage(img, pad, pad);
 
-  canvas.toBlob((blob) => {
-    if (!blob) return;
-    const pngUrl = URL.createObjectURL(blob);
-    triggerDownload(pngUrl, `${fileName}.png`);
-    window.setTimeout(() => URL.revokeObjectURL(pngUrl), 10_000);
-  }, 'image/png');
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+  if (!blob) return;
+  await deliverBlob(app, blob, fileName + '.png');
 }
 
 // ── ErdRenderer ───────────────────────────────────────────────────────────────
@@ -250,7 +296,7 @@ export class ErdRenderer {
    * mermaid 코드블록을 ERD 전용 뷰로 렌더링한다.
    * renderers/index.ts 의 registerMarkdownCodeBlockProcessor 콜백에서 호출된다.
    */
-  async render(source: string, el: HTMLElement): Promise<void> {
+  async render(source: string, el: HTMLElement, app?: App): Promise<void> {
     el.empty();
     syncMermaidTheme();
 
@@ -320,8 +366,8 @@ export class ErdRenderer {
       return path.replace(/\.[^.]+$/, '').split('/').pop() ?? 'erd';
     };
 
-    btnPng.addEventListener('click', () => { if (svgEl) void downloadPng(svgEl, fileName()); });
-    btnSvg.addEventListener('click', () => { if (svgEl) downloadSvg(svgEl, fileName()); });
+    btnPng.addEventListener('click', () => { if (svgEl) void downloadPng(app, svgEl, fileName()); });
+    btnSvg.addEventListener('click', () => { if (svgEl) void downloadSvg(app, svgEl, fileName()); });
 
     // ── 탭 전환 ───────────────────────────────────────────────────────────────
     const activate = (showDiagram: boolean) => {
